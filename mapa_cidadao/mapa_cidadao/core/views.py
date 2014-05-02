@@ -1,11 +1,42 @@
 # coding: utf-8
+import json
+
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.cache import cache
 from django.db.models.loading import get_model
 from django.http import Http404
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import render_to_response
+from django.views.generic import CreateView
 from django.views.generic.edit import FormMixin
 from django.views.generic.list import ListView
+
+from municipios.models import Municipio
+
+
+MUNICIPIO_ID = getattr(settings, 'MUNICIPIO_ID', 3549904)
+
+MUNICIPIO = Municipio.objects.get(id_ibge=MUNICIPIO_ID)
+ESTADO = MUNICIPIO.uf
+END_GEOCODE_STR = u'%s - %s, Brasil' % (MUNICIPIO.nome, ESTADO.nome)
+
+
+def get_current_geom(request):
+
+    geom = cache.get("geom_%s" % MUNICIPIO_ID)
+    if geom is None:
+        geom = MUNICIPIO.geom
+        geom.transform(4326)
+
+        cache.set("geom_%s" % MUNICIPIO_ID, geom, 30*24*60*60)  # 1 mês
+
+    return HttpResponse(
+        geom.json,
+        content_type="application/json"
+    )
 
 
 class SearchFormListView(FormMixin, ListView):
@@ -46,6 +77,19 @@ class SearchFormListView(FormMixin, ListView):
         return self.render_to_response(context)
 
 
+def index(request):
+
+    print dir(request.user), 'DIR', request.user.pk
+
+    return render_to_response(
+        'base.html',
+        {
+            'request': request,
+            'user': request.user
+        }
+    )
+
+
 @login_required
 def generic_delete_from_model(request, app_model=None, object_id=None):
     next = request.GET.get('next', 'home')
@@ -66,3 +110,7 @@ def generic_delete_from_model(request, app_model=None, object_id=None):
 
         return redirect(next)
     raise Http404
+
+
+class OcorrenciaCreateView(CreateView):
+    pass

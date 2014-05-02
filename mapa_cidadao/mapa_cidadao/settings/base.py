@@ -205,6 +205,7 @@ THIRD_PARTY_APPS = (
     # Database migration helpers:
     'south',
     'social_auth',
+    'municipios',
 )
 
 # Apps specific for this project go here.
@@ -277,3 +278,9 @@ FACEBOOK_APP_ID = FACEBOOK_APP_ID
 FACEBOOK_API_SECRET = FACEBOOK_API_SECRET
 
 ########## END FACEBOOK LOGIN CONFIGURATION
+
+########## DEFINE DJANGO MUNICIPIOS CONFIGURATION
+# See: https://github.com/znc-sistemas/django-municipios#utilizando-dados-geogr%C3%A1ficos
+MUNICIPIOS_GEO = True
+MUNICIPIOS_SRID = 900913
+########## END DJANGO MUNICIPIOS CONFIGURATION

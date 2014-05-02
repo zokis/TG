@@ -75,15 +75,10 @@ class BaseSearchForm(forms.Form):
         """filter stopwords but only if there are useful words"""
 
         split_q = list(smart_split(query_string))
-        filtered_q = []
-
-        for bit in split_q:
-            if bit not in self.STOPWORD_LIST:
-                filtered_q.append(bit)
+        filtered_q = [bit for bit in split_q if bit not in self.STOPWORD_LIST]
 
         if len(filtered_q):
             return filtered_q
-
         else:
             return split_q
 
@@ -133,33 +128,12 @@ class BaseSearchForm(forms.Form):
         qs = qs.filter(*self.construct_filter_args(cleaned_data))
 
         if query_text:
-            fulltext_indexes = getattr(self.Meta, 'fulltext_indexes', None)
-            if DATABASE_ENGINE == 'mysql' and fulltext_indexes:
-                # cross-column fulltext search if db is mysql, otherwise use default behaviour.
-                # We're assuming the appropriate fulltext index has been created
-                match_bits = []
-                params = []
-                for index in fulltext_indexes:
-                    match_bits.append('MATCH(%s) AGAINST (%%s) * %s' % index)
-                    params.append(query_text)
-
-                match_expr = ' + '.join(match_bits)
-
-                qs = qs.extra(
-                    select={'relevance': match_expr},
-                    where=(match_expr,),
-                    params=params,
-                    select_params=params,
-                    order_by=('-relevance',)
-                )
-
+            # construct text search for sqlite, or for when no fulltext indexes are defined
+            text_q = self.get_text_search_query(query_text)
+            if text_q:
+                qs = qs.filter(text_q)
             else:
-                # construct text search for sqlite, or for when no fulltext indexes are defined
-                text_q = self.get_text_search_query(query_text)
-                if text_q:
-                    qs = qs.filter(text_q)
-                else:
-                    qs = qs.none()
+                qs = qs.none()
 
         if self.cleaned_data['order_by']:
             qs = qs.order_by(*self.cleaned_data['order_by'].split(','))

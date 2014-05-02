@@ -2,38 +2,8 @@
 import json
 
 from os.path import join
-from random import choice, randint
 from unicodedata import normalize
-
-from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.core.serializers.json import DjangoJSONEncoder
-
-VOGAIS = '!&0134@AEIOUYaeiouy'
-CONSOANTES = '256789BCDFGHJKLMNPQRSTVWXZ_bcdfghjklmnpqrstvwxz'
-
-
-def gera_password(min_len=14, max_len=19):
-    c = lambda x: x % 2 == 0 and choice(CONSOANTES) or choice(VOGAIS)
-    if min_len == max_len:
-        length = min_len
-    else:
-        length = randint(min_len, max_len)
-    return ''.join(c(i) for i in range(length))
-
-
-def get_paginator_context(objects, request, n_pages=10):
-    paginator = Paginator(objects, n_pages)
-    page = request.GET.get('page')
-    try:
-        object_list = paginator.page(page)
-    except PageNotAnInteger:
-        object_list = paginator.page(1)
-    except EmptyPage:
-        object_list = paginator.page(paginator.num_pages)
-    return {
-        'object_list': object_list, 'is_paginated': paginator.num_pages > 1, 'page_obj': object_list,
-        'paginator': paginator
-    }
 
 
 def get_upload_path_docs(instance, filename):
