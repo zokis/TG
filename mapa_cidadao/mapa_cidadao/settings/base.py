@@ -188,11 +188,11 @@ DJANGO_APPS = (
     # Default Django apps:
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    'django.contrib.gis',
+    'django.contrib.messages',
     'django.contrib.sessions',
     'django.contrib.sites',
-    'django.contrib.messages',
     'django.contrib.staticfiles',
-
     # Useful template tags:
     # 'django.contrib.humanize',
 
@@ -206,6 +206,8 @@ THIRD_PARTY_APPS = (
     'south',
     'social_auth',
     'municipios',
+    'django_extensions',
+    'bootstrap_toolkit',
 )
 
 # Apps specific for this project go here.

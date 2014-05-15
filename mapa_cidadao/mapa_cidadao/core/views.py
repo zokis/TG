@@ -1,6 +1,4 @@
 # coding: utf-8
-import json
-
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -16,6 +14,9 @@ from django.views.generic.list import ListView
 
 from municipios.models import Municipio
 
+from mapa_cidadao.core.forms import OcorrenciaForm
+from mapa_cidadao.core.models import Ocorrencia
+
 
 MUNICIPIO_ID = getattr(settings, 'MUNICIPIO_ID', 3549904)
 
@@ -24,15 +25,18 @@ ESTADO = MUNICIPIO.uf
 END_GEOCODE_STR = u'%s - %s, Brasil' % (MUNICIPIO.nome, ESTADO.nome)
 
 
-def get_current_geom(request):
-
+def get_geom_from_cache():
     geom = cache.get("geom_%s" % MUNICIPIO_ID)
     if geom is None:
         geom = MUNICIPIO.geom
-        geom.transform(4326)
+        geom.transform(900913)
 
         cache.set("geom_%s" % MUNICIPIO_ID, geom, 30*24*60*60)  # 1 mês
+    return geom
 
+
+def get_current_geom(request):
+    geom = get_geom_from_cache()
     return HttpResponse(
         geom.json,
         content_type="application/json"
@@ -78,14 +82,38 @@ class SearchFormListView(FormMixin, ListView):
 
 
 def index(request):
-
-    print dir(request.user), 'DIR', request.user.pk
+    geom = get_geom_from_cache()
+    pontos_ocorrencia = Ocorrencia.objects.filter(ponto__intersects=geom)
 
     return render_to_response(
         'base.html',
         {
             'request': request,
-            'user': request.user
+            'user': request.user,
+            'pontos_ocorrencia': pontos_ocorrencia
+        }
+    )
+
+
+@login_required
+def ocorrencia_crud(request, pk=None):
+    if pk:
+        ocorrencia = get_object_or_404(Ocorrencia, pk=pk, user=request.user)
+    else:
+        ocorrencia = None
+
+    form = OcorrenciaForm(request.POST or None, instance=ocorrencia, request_user=request.user)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save()
+
+    return render_to_response(
+        'forms/ocorrencia.html',
+        {
+            'form': form,
+            'request': request,
+            'user': request.user,
         }
     )
 
@@ -110,7 +138,3 @@ def generic_delete_from_model(request, app_model=None, object_id=None):
 
         return redirect(next)
     raise Http404
-
-
-class OcorrenciaCreateView(CreateView):
-    pass

@@ -6,6 +6,11 @@ from django.db.models.query import QuerySet
 from django.utils.text import smart_split
 from django.utils.translation import ugettext_lazy as _
 
+from django.contrib.gis.geos import Point, Polygon, GEOSGeometry
+
+
+from .models import Ocorrencia
+
 
 DEFAULT_STOPWORDS = ('de,o,a,os,as')
 
@@ -142,3 +147,47 @@ class BaseSearchForm(forms.Form):
 
     def get_result_queryset_by_user(self, user):
         return self.get_result_queryset().by_user(user)
+
+
+class OcorrenciaForm(forms.ModelForm):
+    geom = forms.CharField(widget=forms.HiddenInput)
+
+    def __init__(self, *args, **kwargs):
+        self.request_user = kwargs.pop('request_user', None)
+        super(OcorrenciaForm, self).__init__(*args, **kwargs)
+        self.fields['descricao'].widget.attrs['rows'] = "5"
+        self.fields['descricao'].widget.attrs['cols'] = "40"
+
+    def clean(self):
+        cleaned_data = super(OcorrenciaForm, self).clean()
+        try:
+            GEOSGeometry(cleaned_data['geom'])
+        except:
+            raise forms.ValidationError(u'Geometria Inválida')
+
+    def save(self, *args, **kwargs):
+        commit = kwargs.get('commit', True)
+        kwargs['commit'] = False
+
+        instance = super(OcorrenciaForm, self).save(*args, **kwargs)
+
+        ponto = poligono = None
+
+        geom = GEOSGeometry(self.cleaned_data['geom'])
+        if geom.geom_type == 'Point':
+            ponto = geom
+        else:
+            poligono = geom
+
+        instance.ponto = ponto
+        instance.poligono = poligono
+
+        instance.user = self.request_user
+
+        if commit:
+            instance.save()
+        return instance
+
+    class Meta:
+        model = Ocorrencia
+        fields = ('categoria', 'titulo', 'descricao')

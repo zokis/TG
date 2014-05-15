@@ -12,6 +12,7 @@
     <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
     <link href="{% static 'css/social_buttons.css' %}" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="http://acanimal.github.io/Openlayers-Cookbook/recipes/data/green_theme/style.css">
     <style>
       body {
         padding-top: 51px; /* 51px to make the container go all the way to the bottom of the topbar */
@@ -82,6 +83,148 @@
     <!-- place project specific Javascript in this file -->
     <script src="{% static 'js/project.js' %}"></script>
 
-    {% block extra_js %}{% endblock extra_js %}
+    <script type="text/javascript">
+var map;
+var epsg4326 = new OpenLayers.Projection("EPSG:4326");
+var epsg900913 = new OpenLayers.Projection("EPSG:900913");
+
+function init() {
+    map = new OpenLayers.Map({
+        div: "map",
+        projection: "EPSG:900913",
+        fractionalZoom: true,
+        layers: [new OpenLayers.Layer.OSM()],
+        controls: [
+            new OpenLayers.Control.Navigation({
+                dragPanOptions: {
+                    enableKinetic: true
+                }
+            }),
+            new OpenLayers.Control.Zoom(),
+            new OpenLayers.Control.ScaleLine(),
+            new OpenLayers.Control.MousePosition(),
+            new OpenLayers.Control.LayerSwitcher(),
+            new OpenLayers.Control.Permalink(),
+        ]
+    });
+}
+
+function popup_clear() {
+    while(map.popups.length) {
+         map.removePopup(map.popups[0]);
+    }
+}
+
+function feature_click(event) {
+    popup_clear();
+    var feature = event.feature;
+    var content = "<h2>" + 'feature.attributes.name' + "</h2>" + 'feature.attributes.description';
+
+    popup = new OpenLayers.Popup.FramedCloud(
+        "chicken",
+        feature.geometry.getBounds().getCenterLonLat(),
+        new OpenLayers.Size(100, 100),
+        content,
+        null,
+        true,
+        popup_clear
+    );
+    feature.popup = popup;
+    map.addPopup(popup);
+}
+
+
+function load_pontos() {
+    var wkt = new OpenLayers.Format.WKT();
+
+    var pontos_layer = new OpenLayers.Layer.Vector("Pontos de Ocorrência");
+
+    map.addControl(new OpenLayers.Control.DrawFeature(pontos_layer, OpenLayers.Handler.Point));
+
+    pontos_layer.events.register('featureclick', pontos_layer, feature_click);
+    pontos_layer.events.register('nofeatureclick', pontos_layer, popup_clear);
+
+
+    map.addLayer(pontos_layer);
+
+    var pontos_wkt = [{% for ponto_oco in pontos_ocorrencia %}'{{ ponto_oco.ponto.wkt }}', {% endfor %}];
+    var pontos_features = [];
+
+    var pontos_wkt_len = pontos_wkt.length;
+    for (var i = pontos_wkt_len; i--;) {
+        var feature = wkt.read(pontos_wkt[i]);
+        feature.style = {
+            graphicWidth: 32,
+            graphicHeight: 32,
+            externalGraphic: 'https://cdn2.iconfinder.com/data/icons/snipicons/500/map-marker-32.png',
+        };
+        pontos_features.push(feature);
+    }
+
+    pontos_layer.addFeatures(pontos_features);
+}
+
+function load_cidade_geom() {
+    var geojson_format = new OpenLayers.Format.GeoJSON();
+
+    var sjc_lonlat = new OpenLayers.LonLat(-45.88555, -23.17960).transform(epsg4326, epsg900913);
+    var zoom = 15;
+    map.setCenter(sjc_lonlat, zoom);
+
+    var cidade_layer = new OpenLayers.Layer.Vector("Limites de São José dos Campos");
+    map.addLayer(cidade_layer);
+
+    $.ajax({
+        dataType: "json",
+        url: "/get_current_geom/",
+        success: function (data) {
+            var features = geojson_format.read(data);
+
+            if (features.length >= 1) {
+                var feature = features[0];
+                feature.style = {
+                    fillColor: '#FFF',
+                    fillOpacity: 0
+                };
+
+                map.setOptions({
+                    restrictedExtent: feature.geometry.getBounds(),
+                    numZoomLevels: 10
+                });
+
+                cidade_layer.addFeatures([feature]);
+
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function (position) {
+                        var current_lonlat = new OpenLayers.LonLat(
+                            position.coords.longitude,
+                            position.coords.latitude
+                        ).transform(epsg4326, epsg900913);
+
+                        var current_point = new OpenLayers.Geometry.Point(
+                            current_lonlat.lon,
+                            current_lonlat.lat
+                        );
+
+                        if (feature.geometry.intersects(current_point)) {
+                            map.setCenter(current_point, zoom);
+                        }
+                    });
+                }
+            }
+        }
+    });
+}
+    </script>
+    {% block extra_js %}
+    <script type="text/javascript">
+        $(document).ready(function(){
+          init();
+          load_cidade_geom();
+          load_pontos();
+        });
+    </script>
+
+    {% endblock extra_js %}
   </body>
 </html>

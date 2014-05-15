@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load bootstrap_toolkit %}
+{% block content %}
+    <div id="map"></div>
+
+
+    <button class="btn" id="draw-point">
+        <img width="26" height="26" src="https://cdn2.iconfinder.com/data/icons/ios-7-icons/50/edit-48.png" alt="Adicionar um Ponto">
+    </button>
+
+    <button class="btn" id="draw-polygon">
+        <img width="26" height="26" src="https://cdn1.iconfinder.com/data/icons/windows8_icons_iconpharm/26/polygon.png" alt="Adicionar um Ponto">
+    </button>
+
+    <button class="btn" id="pam">
+        <img width="26" height="26" src="https://cdn3.iconfinder.com/data/icons/wpzoom-developer-icon-set/500/142-48.png" alt="Adicionar um Ponto">
+    </button>
+
+    <div id="form-overlay">
+        <center><h3>Nova Ocorrência</h3></center>
+        <hr>
+        <form method="POST">
+            {{ form|as_bootstrap }}
+        </form>
+    </div>
+{% endblock content %}
+
+
+{% block extra_js %}
+<script type="text/javascript">
+    $(document).ready(function(){
+        init();
+        load_cidade_geom();
+
+        var pontos_layer = new OpenLayers.Layer.Vector("Pontos");
+        var poligonos_layer = new OpenLayers.Layer.Vector("Áreas");
+
+        map.addLayers([pontos_layer, poligonos_layer]);
+
+        var point_control = new OpenLayers.Control.DrawFeature(
+            pontos_layer,
+            OpenLayers.Handler.Point
+        );
+        map.addControl(point_control);
+        var polygon_control = new OpenLayers.Control.DrawFeature(
+            poligonos_layer,
+            OpenLayers.Handler.Polygon, {handlerOptions: {freehand: false}}
+        );
+        map.addControl(polygon_control);
+
+        pontos_layer.events.on({
+            'beforefeatureadded': function(event){
+                var feature_curr = event.feature;
+
+                var features_len = pontos_layer.features.length;
+                for(var i=features_len; i--;){
+                    var feature = pontos_layer.features[i];
+                    if(feature.id != feature_curr.id){
+                        pontos_layer.removeFeatures(feature);
+                    }
+                }
+            }
+        });
+
+        poligonos_layer.events.on({
+            'beforefeatureadded': function(event){
+                var feature_curr = event.feature;
+
+                var features_len = poligonos_layer.features.length;
+                for(var i=features_len; i--;){
+                    var feature = poligonos_layer.features[i];
+                    if(feature.id != feature_curr.id){
+                        poligonos_layer.removeFeatures(feature);
+                    }
+                }
+            }
+        });
+
+        $('#draw-point').click(function (){
+            point_control.activate();
+            polygon_control.deactivate();
+            poligonos_layer.removeAllFeatures();
+        });
+        $('#draw-polygon').click(function (){
+            polygon_control.activate();
+            point_control.deactivate();
+            pontos_layer.removeAllFeatures();
+        });
+        $('#pam').click(function (){
+            point_control.deactivate();
+            polygon_control.deactivate();
+        });
+
+    });
+</script>
+
+{% endblock extra_js %}

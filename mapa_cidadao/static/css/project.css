@@ -8,3 +8,58 @@
     width: 100%;
     height: 680px;
 }
+
+#form-overlay{
+    position:absolute; 
+    left:80px; 
+    top:70px; 
+    z-index:10000; 
+    width: 550px;
+    height: 450px;
+
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=70)";
+    filter: alpha(opacity=70);
+    -moz-opacity: 0.7;
+    -khtml-opacity: 0.7;
+    opacity: 0.7;
+    border: 10px #157065 inset;
+
+    background-color: #ffffff;
+
+    padding: 10px 10px;
+
+    -webkit-border-radius: 50px;
+    -moz-border-radius: 50px;
+    border-radius: 50px;
+
+    -webkit-border-top-right-radius: 0px;
+    -moz-border-radius-topright: 0px;
+    border-top-right-radius: 0px;
+
+    -moz-box-shadow: -15px 29px 5px 0px #31594f;
+    -webkit-box-shadow: -15px 29px 5px 0px #31594f;
+    box-shadow: -15px 29px 5px 0px #31594f;
+}
+
+/* Controles de desenho */
+#draw-point{
+    position:absolute; 
+    right:80px; 
+    top:70px; 
+    z-index:10000; 
+}
+
+#draw-polygon{
+    position:absolute; 
+    right:160px; 
+    top:70px; 
+    z-index:10000; 
+}
+
+#pam{
+    position:absolute; 
+    right:240px; 
+    top:70px; 
+    z-index:10000; 
+}
+/* Fim Controles de desenho */

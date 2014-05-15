@@ -1,6 +1,7 @@
 # coding: utf-8
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models
+from django.db import IntegrityError
 
 STATUS_CHOICES = (
     (1, u'Aberto'),
@@ -11,7 +12,7 @@ STATUS_CHOICES = (
 )
 
 
-class PontoCategoria(models.Model):
+class Categoria(models.Model):
     nome = models.CharField('nome', max_length=20)
     descricao = models.CharField(u'Descrição', max_length=200)
 
@@ -20,11 +21,31 @@ class PontoCategoria(models.Model):
 
 
 class Ocorrencia(models.Model):
+    poligono = models.PolygonField('poligono', srid=900913, null=True, blank=True)
     ponto = models.PointField('ponto', srid=900913, null=True, blank=True)
-    categoria = models.ForeignKey(PontoCategoria)
+    categoria = models.ForeignKey(Categoria)
     status = models.SmallIntegerField('status', choices=STATUS_CHOICES, default=1)
     titulo = models.CharField(u'Título', max_length=120, blank=False, null=False)
     descricao = models.TextField(u'Descrição', blank=True, null=True)
+    user = models.ForeignKey(User)
+
+    _types = {
+        True: 'poligono',
+        False: 'ponto'
+    }
+
+    def save(self, *args, **kwargs):
+        if self.poligono is None and self.ponto is None:
+            raise IntegrityError(u'Cadastre um ponto ou um poligono')
+        elif self.poligono and self.ponto:
+            raise IntegrityError(u'Cadastre apenas um ponto ou um poligono')
+        else:
+            return super(Ocorrencia, self).save(*args, **kwargs)
+
+    @property
+    def type(self):
+        return self._types[self.ponto is None]
+
     objects = models.GeoManager()
 
 
