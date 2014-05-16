@@ -3,10 +3,11 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
+from django.core.urlresolvers import reverse
 from django.db.models.loading import get_model
 from django.http import Http404
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.shortcuts import render_to_response
 from django.views.generic import CreateView
 from django.views.generic.edit import FormMixin
@@ -23,6 +24,8 @@ MUNICIPIO_ID = getattr(settings, 'MUNICIPIO_ID', 3549904)
 MUNICIPIO = Municipio.objects.get(id_ibge=MUNICIPIO_ID)
 ESTADO = MUNICIPIO.uf
 END_GEOCODE_STR = u'%s - %s, Brasil' % (MUNICIPIO.nome, ESTADO.nome)
+
+EMPTY_STRING = ''
 
 
 def get_geom_from_cache():
@@ -97,6 +100,7 @@ def index(request):
 
 @login_required
 def ocorrencia_crud(request, pk=None):
+    geom = EMPTY_STRING
     if pk:
         ocorrencia = get_object_or_404(Ocorrencia, pk=pk, user=request.user)
     else:
@@ -107,13 +111,22 @@ def ocorrencia_crud(request, pk=None):
     if request.method == 'POST':
         if form.is_valid():
             form.save()
+            messages.success(request, u'Ocorrência salva com sucesso!')
 
-    return render_to_response(
+            return redirect(reverse('index'))
+        else:
+            geom = form.cleaned_data.get('geom', EMPTY_STRING)
+            if geom != EMPTY_STRING:
+                geom = '%s' % geom
+
+    return render(
+        request,
         'forms/ocorrencia.html',
         {
             'form': form,
             'request': request,
             'user': request.user,
+            'geom': geom
         }
     )
 

@@ -1,96 +1,56 @@
 {% extends 'base.html' %}
+{% load staticfiles %}
 {% load bootstrap_toolkit %}
+
+{% block extra_css %}
+    <link href="{% static 'css/select2/select2.css' %}" rel="stylesheet">
+    <link href="{% static 'css/select2/select2-bootstrap.css' %}" rel="stylesheet">
+{% endblock extra_css %}
+
 {% block content %}
     <div id="map"></div>
 
-
-    <button class="btn" id="draw-point">
-        <img width="26" height="26" src="https://cdn2.iconfinder.com/data/icons/ios-7-icons/50/edit-48.png" alt="Adicionar um Ponto">
-    </button>
-
-    <button class="btn" id="draw-polygon">
-        <img width="26" height="26" src="https://cdn1.iconfinder.com/data/icons/windows8_icons_iconpharm/26/polygon.png" alt="Adicionar um Ponto">
-    </button>
-
-    <button class="btn" id="pam">
-        <img width="26" height="26" src="https://cdn3.iconfinder.com/data/icons/wpzoom-developer-icon-set/500/142-48.png" alt="Adicionar um Ponto">
-    </button>
-
     <div id="form-overlay">
-        <center><h3>Nova Ocorrência</h3></center>
+        <center>
+            <h3>
+                Nova Ocorrência
+            </h3>
+        </center>
+        <div id="mover" class="mover"></div>
         <hr>
         <form method="POST">
-            {{ form|as_bootstrap }}
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="alert alert-block alert-error">
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {{ form.categoria|as_bootstrap }}
+            {{ form.titulo|as_bootstrap }}
+            {{ form.descricao|as_bootstrap }}
+            {{ form.geom }}
+            <input type="submit" value="Salvar Ocorrência" class="btn btn-primary">
         </form>
     </div>
 {% endblock content %}
 
-
 {% block extra_js %}
+<script type="text/javascript" src="{% static 'js/select2/select2.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/select2/select2_locale_pt-BR.js' %}"></script>
+
 <script type="text/javascript">
+    var geom = '{{ geom }}';
     $(document).ready(function(){
         init();
         load_cidade_geom();
-
-        var pontos_layer = new OpenLayers.Layer.Vector("Pontos");
-        var poligonos_layer = new OpenLayers.Layer.Vector("Áreas");
-
-        map.addLayers([pontos_layer, poligonos_layer]);
-
-        var point_control = new OpenLayers.Control.DrawFeature(
-            pontos_layer,
-            OpenLayers.Handler.Point
-        );
-        map.addControl(point_control);
-        var polygon_control = new OpenLayers.Control.DrawFeature(
-            poligonos_layer,
-            OpenLayers.Handler.Polygon, {handlerOptions: {freehand: false}}
-        );
-        map.addControl(polygon_control);
-
-        pontos_layer.events.on({
-            'beforefeatureadded': function(event){
-                var feature_curr = event.feature;
-
-                var features_len = pontos_layer.features.length;
-                for(var i=features_len; i--;){
-                    var feature = pontos_layer.features[i];
-                    if(feature.id != feature_curr.id){
-                        pontos_layer.removeFeatures(feature);
-                    }
-                }
-            }
+        mapa_cidadao_draw_component(geom, '.container-full');
+        $("#id_categoria").select2({allowClear: false});
+        $(function() {
+            $('#mover').mover_h('#form-overlay');
+            $('#mover').mover_v('#form-overlay');
         });
-
-        poligonos_layer.events.on({
-            'beforefeatureadded': function(event){
-                var feature_curr = event.feature;
-
-                var features_len = poligonos_layer.features.length;
-                for(var i=features_len; i--;){
-                    var feature = poligonos_layer.features[i];
-                    if(feature.id != feature_curr.id){
-                        poligonos_layer.removeFeatures(feature);
-                    }
-                }
-            }
-        });
-
-        $('#draw-point').click(function (){
-            point_control.activate();
-            polygon_control.deactivate();
-            poligonos_layer.removeAllFeatures();
-        });
-        $('#draw-polygon').click(function (){
-            polygon_control.activate();
-            point_control.deactivate();
-            pontos_layer.removeAllFeatures();
-        });
-        $('#pam').click(function (){
-            point_control.deactivate();
-            polygon_control.deactivate();
-        });
-
     });
 </script>
 

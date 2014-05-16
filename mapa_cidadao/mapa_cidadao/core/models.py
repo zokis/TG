@@ -35,7 +35,7 @@ class Ocorrencia(models.Model):
     }
 
     def save(self, *args, **kwargs):
-        if self.poligono is None and self.ponto is None:
+        if not self.poligono and not self.ponto:
             raise IntegrityError(u'Cadastre um ponto ou um poligono')
         elif self.poligono and self.ponto:
             raise IntegrityError(u'Cadastre apenas um ponto ou um poligono')

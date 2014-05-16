@@ -56,9 +56,11 @@
               </p>
             {% else %}
               <p class="navbar-text pull-right">
-                Logado como <a href="" class="navbar-link">{{ user.first_name|default:"Not provided" }} {{ user.last_name|default:"" }}</a>
-
-                <a href="{% url 'logout' %}" class="navbar-link">Desconectar</a>
+                <a href="#" class="navbar-link">
+                    <i class="fa fa-user"></i> {{ user.first_name|default:"Not provided" }} {{ user.last_name|default:"" }}
+                </a>
+                <span class="divider">/</span>
+                <a href="{% url 'logout' %}" class="navbar-link"><i class="fa fa-power-off"></i></a>
               </p>
             {% endif %}
           </div><!--/.nav-collapse -->
@@ -87,6 +89,7 @@
 var map;
 var epsg4326 = new OpenLayers.Projection("EPSG:4326");
 var epsg900913 = new OpenLayers.Projection("EPSG:900913");
+var wkt = new OpenLayers.Format.WKT();
 
 function init() {
     map = new OpenLayers.Map({
@@ -103,7 +106,7 @@ function init() {
             new OpenLayers.Control.Zoom(),
             new OpenLayers.Control.ScaleLine(),
             new OpenLayers.Control.MousePosition(),
-            new OpenLayers.Control.LayerSwitcher(),
+            // new OpenLayers.Control.LayerSwitcher(),
             new OpenLayers.Control.Permalink(),
         ]
     });
@@ -135,8 +138,6 @@ function feature_click(event) {
 
 
 function load_pontos() {
-    var wkt = new OpenLayers.Format.WKT();
-
     var pontos_layer = new OpenLayers.Layer.Vector("Pontos de Ocorrência");
 
     map.addControl(new OpenLayers.Control.DrawFeature(pontos_layer, OpenLayers.Handler.Point));

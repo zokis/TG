@@ -157,13 +157,21 @@ class OcorrenciaForm(forms.ModelForm):
         super(OcorrenciaForm, self).__init__(*args, **kwargs)
         self.fields['descricao'].widget.attrs['rows'] = "5"
         self.fields['descricao'].widget.attrs['cols'] = "40"
+        self.fields['categoria'].empty_label = None
+
+        for key, field in self.fields.items():
+            field.widget.attrs['class'] = 'input-xxlarge'
 
     def clean(self):
         cleaned_data = super(OcorrenciaForm, self).clean()
+
+        if not cleaned_data.get('geom', False):
+            raise forms.ValidationError(u'Desenhe um polígono ou adicione um ponto')
         try:
             GEOSGeometry(cleaned_data['geom'])
         except:
             raise forms.ValidationError(u'Geometria Inválida')
+        return cleaned_data
 
     def save(self, *args, **kwargs):
         commit = kwargs.get('commit', True)
