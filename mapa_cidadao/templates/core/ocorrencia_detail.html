@@ -28,7 +28,11 @@
 
         <div class="fb-like" data-href="http://localhost:8000/ocorrencia/{{ object.pk }}/detalhes/" data-layout="button" data-action="like" data-show-faces="true" data-share="true"></div>
         {% if user.pk == object.user.pk %}
-            <a href="#" class="btn">Editar</a>
+            <a href="#" class="btn btn-small">Editar</a>
+        {% else %}
+            {% if not is_anonymous %}
+                <a href="#" class="btn btn-small btn-danger">SPAM</a>
+            {% endif %}
         {% endif %}
 
         <table class="table">
