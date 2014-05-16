@@ -86,15 +86,12 @@ class SearchFormListView(FormMixin, ListView):
 
 def index(request):
     geom = get_geom_from_cache()
-    ocorrencias = Ocorrencia.objects.filter(Q(ponto__intersects=geom) | Q(poligono__intersects=geom))
-    for o in ocorrencias:
-        print o.get_estilo()
     return render_to_response(
         'index.html',
         {
             'request': request,
             'user': request.user,
-            'ocorrencias': ocorrencias,
+            'ocorrencias': Ocorrencia.objects.filter(Q(ponto__intersects=geom) | Q(poligono__intersects=geom)),
         }
     )
 

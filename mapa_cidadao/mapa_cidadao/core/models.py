@@ -134,6 +134,29 @@ class Ocorrencia(models.Model):
     objects = models.GeoManager()
 
 
+class Spam(models.Model):
+    ocorrencia = models.ForeignKey(Ocorrencia)
+    contagem = models.IntegerField(default=0)
+
+    @classmethod
+    def add_spam(cls, ocorrencia):
+        try:
+            spam = cls.objects.get(ocorrencia=ocorrencia)
+        except:
+            spam = cls()
+        if spam.contagem:
+            spam.contagem += 1
+        else:
+            spam.contagem = 1
+
+        if spam.contagem >= 10:
+            spam.delete()
+            return None
+        else:
+            spam.save()
+            return spam
+
+
 class Voto(models.Model):
     ocorrencia = models.ForeignKey(Ocorrencia)
     user = models.ForeignKey(User)
