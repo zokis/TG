@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load bootstrap_toolkit %}
+{% load votacao %}
+
+{% block extra_css %}
+    <link href="{% static 'css/select2/select2.css' %}" rel="stylesheet">
+    <link href="{% static 'css/select2/select2-bootstrap.css' %}" rel="stylesheet">
+    <style type="text/css">
+        #map{
+            border-left: 10px #157065 inset;
+            -webkit-border-bottom-left-radius: 5px;
+            -moz-border-radius-bottomleft: 5px;
+            border-bottom-left-radius: 5px;
+        }
+    </style>
+{% endblock extra_css %}
+
+{% block content %}
+<div class="row-fluid">
+    <div class="span4" style="padding-left:2.564102564102564%">
+        <center>
+            <h4>
+                Ocorrência: {{ object.titulo }}
+            </h4>
+        </center>
+        <hr>
+
+        <div class="fb-like" data-href="http://localhost:8000/ocorrencia/{{ object.pk }}/detalhes/" data-layout="button" data-action="like" data-show-faces="true" data-share="true"></div>
+        {% if user.pk == object.user.pk %}
+            <a href="#" class="btn">Editar</a>
+        {% endif %}
+
+        <table class="table">
+            <tr>
+                <td><b>Categoria:</b></td><td>{{ object.categoria }}</td>
+            </tr>
+            <tr>
+                <td><b>Autor:</b></td><td><a target="_blank" href="https://facebook.com/{{ object.user }}/">{{ object.user }}</a></td>
+            </tr>
+            <tr>
+                <td><b>Descrição:</b></td><td colspan="2">{{ object.descricao|linebreaksbr }}</td>
+            </tr>
+            
+        </table>
+
+        
+        Votos <span id="percent-votos"></span>:
+        <div class="progress progress-success progress-striped active" id="bar-votos">
+            <div class="bar" style="width: 50%"></div>
+        </div>
+        Vetos <span id="percent-vetos"></span>:
+        <div class="progress progress-danger progress-striped active" id="bar-vetos">
+            <div class="bar" style="width: 50%"></div>
+        </div>
+
+        {% if not is_anonymous %}
+            {% if user.pk != object.user.pk %}
+                {% if object|can_votar:user %}
+                    VOTAR
+                {% endif %}
+
+                {% if object|can_vetar:user %}
+                    VETAR
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    </div>
+    <div class="span8">
+        <div id="map"></div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block extra_js %}
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&appId=1480968308800869&version=v2.0";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+<script type="text/javascript" src="{% static 'js/select2/select2.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/select2/select2_locale_pt-BR.js' %}"></script>
+
+<script type="text/javascript">
+    var geom = '{% firstof object.ponto.wkt object.poligono.wkt %}';
+    $(document).ready(function(){
+        init();
+        load_cidade_geom();
+        mapa_cidadao_draw_component(geom, '.container-full');
+        $("#id_categoria").select2({allowClear: false});
+        var center;
+        geom = wkt.read(geom);
+        map.setCenter(geom.geometry.getBounds().getCenterLonLat(), 15);
+
+        var votos = {{ object.get_votos }};
+        var vetos = {{ object.get_vetos }};
+        var votos_total = votos + vetos;
+
+        var votos_percent = (votos * 100 / votos_total);
+        var vetos_percent = (100 - votos_percent) + '%';
+        votos_percent += '%';
+
+        $('#bar-votos .bar').css('width', votos_percent);
+        $('#bar-vetos .bar').css('width', vetos_percent);
+
+        $('#percent-votos').html('' + votos + ' - ' + votos_percent);
+        $('#percent-vetos').html('' + vetos + ' - ' + vetos_percent);
+    });
+</script>
+
+{% endblock extra_js %}

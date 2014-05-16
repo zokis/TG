@@ -5,18 +5,24 @@
 {% block extra_css %}
     <link href="{% static 'css/select2/select2.css' %}" rel="stylesheet">
     <link href="{% static 'css/select2/select2-bootstrap.css' %}" rel="stylesheet">
+    <style type="text/css">
+        #map{
+            border-left: 10px #157065 inset;
+            -webkit-border-bottom-left-radius: 5px;
+            -moz-border-radius-bottomleft: 5px;
+            border-bottom-left-radius: 5px;
+        }
+    </style>
 {% endblock extra_css %}
 
 {% block content %}
-    <div id="map"></div>
-
-    <div id="form-overlay">
+<div class="row-fluid">
+    <div class="span4" style="padding-left:2.564102564102564%">
         <center>
-            <h3>
-                Nova Ocorrência
-            </h3>
+            <h4>
+                Editar Ocorrência: {{ form.instance.titulo }}
+            </h4>
         </center>
-        <div id="mover" class="mover"></div>
         <hr>
         <form method="POST">
             {% csrf_token %}
@@ -33,7 +39,12 @@
             {{ form.geom }}
             <input type="submit" value="Salvar Ocorrência" class="btn btn-primary">
         </form>
+        
     </div>
+    <div class="span8">
+        <div id="map"></div>
+    </div>
+</div>
 {% endblock content %}
 
 {% block extra_js %}
@@ -47,10 +58,11 @@
         load_cidade_geom();
         mapa_cidadao_draw_component(geom, '.container-full');
         $("#id_categoria").select2({allowClear: false});
-        $(function() {
-            $('#mover').mover_h('#form-overlay');
-            $('#mover').mover_v('#form-overlay');
-        });
+        var center;
+        geom = wkt.read(geom);
+        map.setCenter(geom.geometry.getBounds().getCenterLonLat(), 15);
+
+
     });
 </script>
 

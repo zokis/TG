@@ -4,12 +4,12 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
+from django.db.models import Q
 from django.db.models.loading import get_model
 from django.http import Http404
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.shortcuts import render_to_response
-from django.views.generic import CreateView
 from django.views.generic.edit import FormMixin
 from django.views.generic.list import ListView
 
@@ -86,14 +86,15 @@ class SearchFormListView(FormMixin, ListView):
 
 def index(request):
     geom = get_geom_from_cache()
-    pontos_ocorrencia = Ocorrencia.objects.filter(ponto__intersects=geom)
-
+    ocorrencias = Ocorrencia.objects.filter(Q(ponto__intersects=geom) | Q(poligono__intersects=geom))
+    for o in ocorrencias:
+        print o.get_estilo()
     return render_to_response(
-        'base.html',
+        'index.html',
         {
             'request': request,
             'user': request.user,
-            'pontos_ocorrencia': pontos_ocorrencia
+            'ocorrencias': ocorrencias,
         }
     )
 
@@ -103,17 +104,20 @@ def ocorrencia_crud(request, pk=None):
     geom = EMPTY_STRING
     if pk:
         ocorrencia = get_object_or_404(Ocorrencia, pk=pk, user=request.user)
+        template = 'forms/ocorrencia_edit.html'
+        geom = ocorrencia.ponto or ocorrencia.poligono
     else:
+        template = 'forms/ocorrencia_add.html'
         ocorrencia = None
 
     form = OcorrenciaForm(request.POST or None, instance=ocorrencia, request_user=request.user)
 
     if request.method == 'POST':
         if form.is_valid():
-            form.save()
+            ocorrencia = form.save()
             messages.success(request, u'Ocorrência salva com sucesso!')
 
-            return redirect(reverse('index'))
+            return redirect(reverse('ocorrencia_crud', args=(ocorrencia.pk,)))
         else:
             geom = form.cleaned_data.get('geom', EMPTY_STRING)
             if geom != EMPTY_STRING:
@@ -121,7 +125,7 @@ def ocorrencia_crud(request, pk=None):
 
     return render(
         request,
-        'forms/ocorrencia.html',
+        template,
         {
             'form': form,
             'request': request,

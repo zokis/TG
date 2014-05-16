@@ -81,6 +81,13 @@ if(typeof $.fn.mover_h == "undefined") {
 
 function mapa_cidadao_draw_component(geom, container){
 
+    var mapa_cidadao_style = {
+        fillColor: '#F00',
+        fillOpacity: 0.5,
+        strokeWidth: 1,
+        strokeColor: '#000',
+    };
+
     var component_style = '<style type="text/css">' +
         '#draw-point{' +
         'position:absolute; ' +
@@ -124,7 +131,9 @@ function mapa_cidadao_draw_component(geom, container){
 
     if(geom !== ''){
         geom = wkt.read(geom);
+        geom.style = mapa_cidadao_style;
         if(geom.geometry.x || geom.geometry.y){
+            geom.style.pointRadius = 4;
             pontos_layer.addFeatures(geom);
         }
         else{
@@ -144,6 +153,10 @@ function mapa_cidadao_draw_component(geom, container){
     map.addControl(polygon_control);
 
     function add_new_feature(layer, new_feature){
+        new_feature.style = mapa_cidadao_style;
+        if(new_feature.geometry.x || new_feature.geometry.y){
+            new_feature.style.pointRadius = 4;
+        }
 
         $('#id_geom').val(wkt.write(new_feature));
 

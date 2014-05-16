@@ -106,7 +106,6 @@ function init() {
             new OpenLayers.Control.Zoom(),
             new OpenLayers.Control.ScaleLine(),
             new OpenLayers.Control.MousePosition(),
-            // new OpenLayers.Control.LayerSwitcher(),
             new OpenLayers.Control.Permalink(),
         ]
     });
@@ -121,7 +120,7 @@ function popup_clear() {
 function feature_click(event) {
     popup_clear();
     var feature = event.feature;
-    var content = "<h2>" + 'feature.attributes.name' + "</h2>" + 'feature.attributes.description';
+    var content = "<h2>" + feature.attributes.name + "</h2>" + feature.attributes.description;
 
     popup = new OpenLayers.Popup.FramedCloud(
         "chicken",
@@ -136,33 +135,40 @@ function feature_click(event) {
     map.addPopup(popup);
 }
 
+function load_ocorrencias() {
+    var ocorrencia_layer = new OpenLayers.Layer.Vector("Ocorrências");
 
-function load_pontos() {
-    var pontos_layer = new OpenLayers.Layer.Vector("Pontos de Ocorrência");
+    var ocorrencias_wkt = [
+        {% for ocorrencia in ocorrencias %}
+        {
+            {% if ocorrencia.type == 'poligono' %}
+            'wkt': '{{ ocorrencia.poligono.wkt|safe }}',
+            {% else %}
+            'wkt': '{{ ocorrencia.ponto.wkt|safe }}',
+            {% endif %}
+            'name': '{{ ocorrencia.titulo }}',
+            'description': '{{ ocorrencia.descricao|escapejs }}',
+            'pk': '{{ ocorrencia.pk }}',
+            'style': {{ ocorrencia.get_estilo|safe }},
+        },
+        {% endfor %}
+    ];
+    var ocorrencias_features = [];
 
-    map.addControl(new OpenLayers.Control.DrawFeature(pontos_layer, OpenLayers.Handler.Point));
-
-    pontos_layer.events.register('featureclick', pontos_layer, feature_click);
-    pontos_layer.events.register('nofeatureclick', pontos_layer, popup_clear);
-
-
-    map.addLayer(pontos_layer);
-
-    var pontos_wkt = [{% for ponto_oco in pontos_ocorrencia %}'{{ ponto_oco.ponto.wkt }}', {% endfor %}];
-    var pontos_features = [];
-
-    var pontos_wkt_len = pontos_wkt.length;
-    for (var i = pontos_wkt_len; i--;) {
-        var feature = wkt.read(pontos_wkt[i]);
-        feature.style = {
-            graphicWidth: 32,
-            graphicHeight: 32,
-            externalGraphic: 'https://cdn2.iconfinder.com/data/icons/snipicons/500/map-marker-32.png',
-        };
-        pontos_features.push(feature);
+    var ocorrencias_wkt_len = ocorrencias_wkt.length;
+    for (var i = ocorrencias_wkt_len; i--;) {
+        var feature = wkt.read(ocorrencias_wkt[i].wkt);
+        feature.attributes.name = ocorrencias_wkt[i].name;
+        feature.attributes.description = ocorrencias_wkt[i].description;
+        feature.style = ocorrencias_wkt[i].style;
+        ocorrencias_features.push(feature);
     }
 
-    pontos_layer.addFeatures(pontos_features);
+    ocorrencia_layer.addFeatures(ocorrencias_features);
+    ocorrencia_layer.events.register('featureclick', ocorrencia_layer, feature_click);
+    ocorrencia_layer.events.register('nofeatureclick', ocorrencia_layer, popup_clear);
+    map.addLayer(ocorrencia_layer);
+    map.addControl(new OpenLayers.Control.DrawFeature(ocorrencia_layer, OpenLayers.Handler.Point));
 }
 
 function load_cidade_geom() {
@@ -222,7 +228,7 @@ function load_cidade_geom() {
         $(document).ready(function(){
           init();
           load_cidade_geom();
-          load_pontos();
+          load_ocorrencias();
         });
     </script>
 

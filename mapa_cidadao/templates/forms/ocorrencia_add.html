@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load bootstrap_toolkit %}
+
+{% block extra_css %}
+    <link href="{% static 'css/select2/select2.css' %}" rel="stylesheet">
+    <link href="{% static 'css/select2/select2-bootstrap.css' %}" rel="stylesheet">
+{% endblock extra_css %}
+
+{% block content %}
+    <div id="map"></div>
+
+    <div id="form-overlay">
+        <center>
+            <h4>
+                Nova Ocorrência
+            </h4>
+        </center>
+        <div id="mover" class="mover"></div>
+        <hr>
+        <form method="POST">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="alert alert-block alert-error">
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {{ form.categoria|as_bootstrap }}
+            {{ form.titulo|as_bootstrap }}
+            {{ form.descricao|as_bootstrap }}
+            {{ form.geom }}
+            <input type="submit" value="Salvar Ocorrência" class="btn btn-primary">
+        </form>
+    </div>
+{% endblock content %}
+
+{% block extra_js %}
+<script type="text/javascript" src="{% static 'js/select2/select2.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/select2/select2_locale_pt-BR.js' %}"></script>
+
+<script type="text/javascript">
+    var geom = '{{ geom }}';
+    $(document).ready(function(){
+        init();
+        load_cidade_geom();
+        mapa_cidadao_draw_component(geom, '.container-full');
+        $("#id_categoria").select2({allowClear: false});
+        $(function() {
+            $('#mover').mover_h('#form-overlay');
+            $('#mover').mover_v('#form-overlay');
+        });
+    });
+</script>
+
+{% endblock extra_js %}

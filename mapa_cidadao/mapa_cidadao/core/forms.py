@@ -6,7 +6,7 @@ from django.db.models.query import QuerySet
 from django.utils.text import smart_split
 from django.utils.translation import ugettext_lazy as _
 
-from django.contrib.gis.geos import Point, Polygon, GEOSGeometry
+from django.contrib.gis.geos import GEOSGeometry
 
 
 from .models import Ocorrencia
@@ -179,16 +179,11 @@ class OcorrenciaForm(forms.ModelForm):
 
         instance = super(OcorrenciaForm, self).save(*args, **kwargs)
 
-        ponto = poligono = None
-
         geom = GEOSGeometry(self.cleaned_data['geom'])
         if geom.geom_type == 'Point':
-            ponto = geom
+            instance.set_ponto(geom)
         else:
-            poligono = geom
-
-        instance.ponto = ponto
-        instance.poligono = poligono
+            instance.set_poligono(geom)
 
         instance.user = self.request_user
 

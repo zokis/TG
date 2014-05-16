@@ -1,7 +1,13 @@
 # coding: utf-8
+from os.path import join
+
+from json import dumps
+
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models
 from django.db import IntegrityError
+
+from jsonfield import JSONField
 
 STATUS_CHOICES = (
     (1, u'Aberto'),
@@ -13,8 +19,26 @@ STATUS_CHOICES = (
 
 
 class Categoria(models.Model):
+    _estilo_default = {
+        'graphicWidth': 32,
+        'graphicHeight': 32,
+        'externalGraphic': 'https://cdn2.iconfinder.com/data/icons/snipicons/500/map-marker-32.png',
+    }
+    estilo_default = dumps(_estilo_default)
+
     nome = models.CharField('nome', max_length=20)
     descricao = models.CharField(u'Descrição', max_length=200)
+    marker = models.FileField(upload_to=lambda i, f: join('markers', 'categoria_%s.png' % i.pk), blank=True, null=True)
+    estilo = JSONField(default=estilo_default, blank=True, null=True)
+
+    def get_estilo(self):
+        if self.estilo:
+            estilo = self.estilo
+        else:
+            estilo = self._estilo_default.copy()
+            if self.marker:
+                estilo['externalGraphic'] = self.marker.url
+        return estilo
 
     def __unicode__(self):
         return u'%s' % (self.nome)
@@ -28,6 +52,67 @@ class Ocorrencia(models.Model):
     titulo = models.CharField(u'Título', max_length=120, blank=False, null=False)
     descricao = models.TextField(u'Descrição', blank=True, null=True)
     user = models.ForeignKey(User)
+
+    def get_estilo(self):
+        estilo = self.categoria.get_estilo()
+        if self.type == 'ponto':
+            # Remove os atributos de estilo para um poligonos
+            for remove in ['fillColor', 'fillOpacity', 'strokeWidth', 'strokeColor']:
+                if remove in estilo:
+                    del estilo[remove]
+        else:
+            # Remove os atributos de estilo para um pontos
+            for remove in ['externalGraphic', 'graphicHeight', 'graphicWidth']:
+                if remove in estilo:
+                    del estilo[remove]
+        if not estilo:
+            estilo = {
+                'fillColor': '#F00',
+                'fillOpacity': 0.5,
+                'strokeWidth': 1,
+                'strokeColor': '#000',
+            }
+            if self.type == 'ponto':
+                estilo['pointRadius'] = 4
+        return dumps(estilo)
+
+    def can_votar(self, user):
+        return Voto.can_votar(user, self)
+
+    def can_vetar(self, user):
+        return Veto.can_vetar(user, self)
+
+    def votar(self, user):
+        if self.can_votar(user):
+            if self.user == user:
+                raise Exception(u'Você não pode votar em uma Ocorrência sua')
+            else:
+                return Voto.objects.create(ocorrencia=self, user=user)
+        else:
+            raise Exception(u'Você não pode votar em uma Ocorrência que você já votou ou vetou')
+
+    def vetar(self, user):
+        if self.can_vetar(user):
+            if self.user == user:
+                raise Exception(u'Você não pode vetar em uma Ocorrência sua')
+            else:
+                return Voto.objects.create(ocorrencia=self, user=user)
+        else:
+            raise Exception(u'Você não pode vetar em uma Ocorrência que você já vetou ou votou')
+
+    def get_votos(self):
+        return Voto.objects.filter(ocorrencia=self).count()
+
+    def get_vetos(self):
+        return Veto.objects.filter(ocorrencia=self).count()
+
+    def set_ponto(self, ponto):
+        self.ponto = ponto
+        self.poligono = None
+
+    def set_poligono(self, poligono):
+        self.poligono = poligono
+        self.ponto = None
 
     _types = {
         True: 'poligono',
@@ -54,6 +139,12 @@ class Voto(models.Model):
     user = models.ForeignKey(User)
     date_add = models.DateTimeField(auto_now_add=True)
 
+    @classmethod
+    def can_votar(cls, user, ocorrencia):
+        votou = cls.objects.filter(user=user, ocorrencia=ocorrencia).count()
+        vetou = cls.objects.filter(user=user, ocorrencia=ocorrencia).count()
+        return not votou and not vetou
+
     class Meta:
         ordering = ('date_add',)
 
@@ -62,6 +153,12 @@ class Veto(models.Model):
     ocorrencia = models.ForeignKey(Ocorrencia)
     user = models.ForeignKey(User)
     date_add = models.DateTimeField(auto_now_add=True)
+
+    @classmethod
+    def can_vetar(cls, user, ocorrencia):
+        vetou = cls.objects.filter(user=user, ocorrencia=ocorrencia).count()
+        votou = cls.objects.filter(user=user, ocorrencia=ocorrencia).count()
+        return not vetou and not votou
 
     class Meta:
         ordering = ('date_add',)
