@@ -70,7 +70,7 @@ class Ocorrencia(models.Model):
                 'fillColor': '#F00',
                 'fillOpacity': 0.5,
                 'strokeWidth': 1,
-                'strokeColor': '#000',
+                'strokeColor': '#F00',
             }
             if self.type == 'ponto':
                 estilo['pointRadius'] = 4
