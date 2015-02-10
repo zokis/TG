@@ -46,9 +46,9 @@
           <a class="brand" href="#">Mapa do Cidadão</a>
           <div class="nav-collapse collapse">
             <ul class="nav">
-              <li class="active"><a href="#">Home</a></li>
-              <li><a href="#about">Sobre</a></li>
-              <li><a href="#contact">Contato</a></li>
+              <li class="active" id="menu-home"><a href="#">Home</a></li>
+              <li class="" id="menu-about"><a href="{% url "about" %}">Sobre</a></li>
+              <li class="" id="menu-contact"><a href="{% url "contact" %}">Contato</a></li>
             </ul>
             {% if user.is_anonymous %}
               <p class="navbar-text pull-right">
@@ -78,7 +78,7 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="http://code.jquery.com/jquery-latest.js"></script>
-    <script src="http://openlayers.org/dev/OpenLayers.js"></script>
+    <script src="{% static 'js/openlayers/OpenLayers.js' %}"></script>
 
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
 
@@ -103,7 +103,7 @@ function init() {
                     enableKinetic: true
                 }
             }),
-            new OpenLayers.Control.Zoom(),
+            // new OpenLayers.Control.Zoom(),
             new OpenLayers.Control.ScaleLine(),
             new OpenLayers.Control.MousePosition(),
             new OpenLayers.Control.Permalink(),
@@ -149,7 +149,7 @@ function load_ocorrencias() {
             'name': '{{ ocorrencia.titulo }}',
             'description': '{{ ocorrencia.descricao|escapejs }}',
             'pk': '{{ ocorrencia.pk }}',
-            'style': {{ ocorrencia.get_estilo|safe }},
+            'stylesheet': {{ ocorrencia.get_estilo|safe }},
         },
         {% endfor %}
     ];
