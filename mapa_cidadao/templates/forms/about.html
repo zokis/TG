@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load bootstrap_toolkit %}
+{% block extra_css %}
+{% endblock extra_css %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="span12">
+            <h1 class="h1">
+                Sobre <small>Saiba um pouco sobre a nossa história</small></h1>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="span12">
+            <div class="well">
+            	Texto Falando Sobre
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block extra_js %}
+    <script type="text/javascript">
+    $('#menu-home').removeClass('active');
+    $('#menu-about').addClass('active');
+    </script>
+{% endblock extra_js %}
