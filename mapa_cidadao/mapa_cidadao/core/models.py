@@ -53,6 +53,9 @@ class Ocorrencia(models.Model):
     descricao = models.TextField(u'Descrição', blank=True, null=True)
     user = models.ForeignKey(User)
 
+    def user_can_delete(self, user):
+        return user == self.user
+
     def get_estilo(self):
         estilo = self.categoria.get_estilo()
         if self.type == 'ponto':
@@ -140,10 +143,7 @@ class Spam(models.Model):
 
     @classmethod
     def add_spam(cls, ocorrencia):
-        try:
-            spam = cls.objects.get(ocorrencia=ocorrencia)
-        except:
-            spam = cls()
+        spam = cls.objects.get(ocorrencia=ocorrencia)
         if spam.contagem:
             spam.contagem += 1
         else:
