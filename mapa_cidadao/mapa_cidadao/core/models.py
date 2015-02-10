@@ -3,6 +3,7 @@ from os.path import join
 
 from json import dumps
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models
 from django.db import IntegrityError
@@ -24,12 +25,11 @@ class Categoria(models.Model):
         'graphicHeight': 32,
         'externalGraphic': 'https://cdn2.iconfinder.com/data/icons/snipicons/500/map-marker-32.png',
     }
-    estilo_default = dumps(_estilo_default)
 
     nome = models.CharField('nome', max_length=20)
     descricao = models.CharField(u'Descrição', max_length=200)
     marker = models.FileField(upload_to=lambda i, f: join('markers', 'categoria_%s.png' % i.pk), blank=True, null=True)
-    estilo = JSONField(default=estilo_default, blank=True, null=True)
+    estilo = JSONField(default=dumps(_estilo_default), blank=True, null=True)
 
     def get_estilo(self):
         if self.estilo:
@@ -73,7 +73,7 @@ class Ocorrencia(models.Model):
                 'fillColor': '#F00',
                 'fillOpacity': 0.5,
                 'strokeWidth': 1,
-                'strokeColor': '#000',
+                'strokeColor': '#F00',
             }
             if self.type == 'ponto':
                 estilo['pointRadius'] = 4
@@ -117,11 +117,6 @@ class Ocorrencia(models.Model):
         self.poligono = poligono
         self.ponto = None
 
-    _types = {
-        True: 'poligono',
-        False: 'ponto'
-    }
-
     def save(self, *args, **kwargs):
         if not self.poligono and not self.ponto:
             raise IntegrityError(u'Cadastre um ponto ou um poligono')
@@ -129,6 +124,11 @@ class Ocorrencia(models.Model):
             raise IntegrityError(u'Cadastre apenas um ponto ou um poligono')
         else:
             return super(Ocorrencia, self).save(*args, **kwargs)
+
+    _types = {
+        True: 'poligono',
+        False: 'ponto'
+    }
 
     @property
     def type(self):
@@ -144,14 +144,9 @@ class Spam(models.Model):
     @classmethod
     def add_spam(cls, ocorrencia):
         spam = cls.objects.get(ocorrencia=ocorrencia)
-        if spam.contagem:
-            spam.contagem += 1
-        else:
-            spam.contagem = 1
-
-        if spam.contagem >= 10:
-            spam.delete()
-            return None
+        spam.contagem = (spam.contagem or 1) + 1
+        if spam.contagem >= settings.SPAM_DELETE:
+            spam.ocorrencia.delete()
         else:
             spam.save()
             return spam
