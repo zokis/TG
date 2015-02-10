@@ -194,3 +194,18 @@ class OcorrenciaForm(forms.ModelForm):
     class Meta:
         model = Ocorrencia
         fields = ('categoria', 'titulo', 'descricao')
+
+
+class ContatoForm(forms.Form):
+    assuntos = (
+        (1, u'Escolha uma Opção'),
+        (2, u'Assunto Geral'),
+        (3, u'Sugestão'),
+        (4, u'Encontrei um Problema'),
+        (5, u'Suporte')
+    )
+    nome = forms.CharField(max_length=25, label="Nome", widget=forms.TextInput(attrs={'class': 'contact-form'}))
+    email = forms.EmailField(label="Email", widget=forms.TextInput(attrs={'class': 'contact-form'}))
+    assunto = forms.ChoiceField(choices=assuntos, widget=forms.Select(attrs={'class': 'contact-form'}))
+
+    mensagem = forms.CharField(widget=forms.Textarea(attrs={'class': 'contact-form'}))
