@@ -15,7 +15,7 @@ from django.views.generic.list import ListView
 
 from municipios.models import Municipio
 
-from mapa_cidadao.core.forms import OcorrenciaForm
+from mapa_cidadao.core.forms import OcorrenciaForm, ContatoForm
 from mapa_cidadao.core.models import Ocorrencia
 
 
@@ -94,6 +94,21 @@ def index(request):
             'ocorrencias': Ocorrencia.objects.filter(Q(ponto__intersects=geom) | Q(poligono__intersects=geom)),
         }
     )
+
+
+def contact(request):
+    form = ContatoForm(request.GET or None)
+    return render_to_response(
+        'forms/contact.html',
+        {
+            'form': form,
+            'user': request.user,
+        }
+    )
+
+
+def about(request):
+    return render_to_response('forms/about.html',{})
 
 
 @login_required
