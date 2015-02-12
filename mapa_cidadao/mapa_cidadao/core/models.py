@@ -10,6 +10,7 @@ from django.db import IntegrityError
 
 from jsonfield import JSONField
 
+
 STATUS_CHOICES = (
     (1, u'Aberto'),
     (2, u'Resolvido'),
@@ -20,7 +21,7 @@ STATUS_CHOICES = (
 
 
 class Categoria(models.Model):
-    _estilo_default = {
+    ESTILO = {
         'graphicWidth': 32,
         'graphicHeight': 32,
         'externalGraphic': 'https://cdn2.iconfinder.com/data/icons/snipicons/500/map-marker-32.png',
@@ -29,13 +30,13 @@ class Categoria(models.Model):
     nome = models.CharField('nome', max_length=20)
     descricao = models.CharField(u'Descrição', max_length=200)
     marker = models.FileField(upload_to=lambda i, f: join('markers', 'categoria_%s.png' % i.pk), blank=True, null=True)
-    estilo = JSONField(default=dumps(_estilo_default), blank=True, null=True)
+    estilo = JSONField(default=dumps(ESTILO), blank=True, null=True)
 
     def get_estilo(self):
         if self.estilo:
             estilo = self.estilo
         else:
-            estilo = self._estilo_default.copy()
+            estilo = self.ESTILO.copy()
             if self.marker:
                 estilo['externalGraphic'] = self.marker.url
         return estilo
@@ -45,7 +46,6 @@ class Categoria(models.Model):
 
 
 class Ocorrencia(models.Model):
-    poligono = models.PolygonField('poligono', srid=900913, null=True, blank=True)
     ponto = models.PointField('ponto', srid=900913, null=True, blank=True)
     categoria = models.ForeignKey(Categoria)
     status = models.SmallIntegerField('status', choices=STATUS_CHOICES, default=1)
@@ -58,25 +58,15 @@ class Ocorrencia(models.Model):
 
     def get_estilo(self):
         estilo = self.categoria.get_estilo()
-        if self.type == 'ponto':
-            # Remove os atributos de estilo para um poligonos
-            for remove in ['fillColor', 'fillOpacity', 'strokeWidth', 'strokeColor']:
-                if remove in estilo:
-                    del estilo[remove]
-        else:
-            # Remove os atributos de estilo para um pontos
-            for remove in ['externalGraphic', 'graphicHeight', 'graphicWidth']:
-                if remove in estilo:
-                    del estilo[remove]
+
         if not estilo:
             estilo = {
                 'fillColor': '#F00',
                 'fillOpacity': 0.5,
                 'strokeWidth': 1,
                 'strokeColor': '#F00',
+                'pointRadius': 4
             }
-            if self.type == 'ponto':
-                estilo['pointRadius'] = 4
         return dumps(estilo)
 
     def can_votar(self, user):
