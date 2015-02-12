@@ -91,7 +91,7 @@ def index(request):
         {
             'request': request,
             'user': request.user,
-            'ocorrencias': Ocorrencia.objects.filter(Q(ponto__intersects=geom) | Q(poligono__intersects=geom)),
+            'ocorrencias': Ocorrencia.objects.filter(Q(ponto__intersects=geom)),
         }
     )
 
