@@ -17,65 +17,22 @@
 
   <!-- CSS  -->
   <link href="{% static 'css/materialize.css' %}" type="text/css" rel="stylesheet" media="screen,projection">
-  <link href="{% static 'css/style.css' %}" type="text/css" rel="stylesheet" media="screen,projection">
-  <link href="{% static 'css/animate.css' %}" type="text/css" rel="stylesheet" media="screen,projection">
-  <style type="text/css">
-#search
-{
-  position: absolute;
-  display: none;
-  margin-bottom: 0;
-  border-top: 1px solid #111;
-  border-bottom: 1px solid #111;
-  padding-top: 0px;
-  min-width: 100%;
-  z-index: 10;
-}
-
-#search form
-{
-  margin: 0;
-}
-
-#search input
-{
-  color: #ccc;
-  border-bottom: 1px solid #333;
-}
-
-#search input:focus
-{
-  box-shadow: none;
-  border-bottom: 1px solid #00AE96;
-}
-html {
-  overflow: hidden; 
-  height: 100%;;
-}
-#map{
-  left: 0;
-  position: absolute;
-  width: 100%;
-  height:100%;
-  background: white;
-}
-
-  </style>
+  <link href="{% static 'css/project.css' %}" type="text/css" rel="stylesheet" media="screen,projection">
 </head>
 <body>
   <nav>
     <div class="nav-wrapper blue">
       <div class="col s12">
-        <a href="#!" class="brand-logo"> -- Mapa do Cidadão</a>
+        -<a href="#!" class="brand-logo"><i class="mdi-maps-map left"></i> Mapa do Cidadão</a>
         <ul class="right hide-on-med-and-down">
-          <li><a href="#" id="toggle-search"><i class="mdi-action-search"></i></a></li>
-          <li>
-            {% if user.is_anonymous %}
-            <a href="{% url 'socialauth_begin' 'facebook' %}"><i class="mdi-action-label left"></i> Login com o Facebook</a>
-            {% else %}
-            <a href="{% url 'logout' %}" class="navbar-link"><i class="mdi-action-label-outline left"></i>Sair</a>
-            {% endif %}
-          </li>
+          <li><a href="#" id="toggle-search"><i class="mdi-action-search left"></i>Busca</a></li>
+          <li><a href="#"><i class="mdi-action-trending-up left"></i>Estatísticas</a></li>
+          {% if user.is_anonymous %}
+          <li><a href="{% url 'socialauth_begin' 'facebook' %}"><i class="mdi-social-public left"></i> Login com o Facebook</a></li>
+          {% else %}
+          <li><a href="#" class="navbar-link"><i class="mdi-action-view-list left"></i>Minhas Ocorrências</a></li>
+          <li><a href="{% url 'logout' %}" class="navbar-link"><i class="mdi-action-exit-to-app left"></i>Sair</a></li>
+          {% endif %}
         </ul>
       </div>
     </div>
@@ -83,190 +40,90 @@ html {
   <div class="row blue darken-3" id="search">
     <div class="container">
       <form action="#" method="GET">
-        <label for="categoria" class="white-text">Categoria</label>
-        <select class="browser-default" name="categoria">
-          <option value="1">Categoria 1</option>
-          <option value="2">Categoria 2</option>
-          <option value="3">Categoria 3</option>
-        </select>
-        <label for="ini_date" class="white-text">De</label>
-        <input type="date" class="datepicker" name="ini_date">
-        <label for="end_date" class="white-text">Até</label>
-        <input type="date" class="datepicker" name="end_date">
+        <div class="row">
+          <div class="col s4">
+            <label for="categoria" class="white-text">Categoria</label>
+            <select class="browser-default" name="categoria">
+              <option value="1">Categoria 1</option>
+              <option value="2">Categoria 2</option>
+              <option value="3">Categoria 3</option>
+            </select>
+          </div>
+          <div class="col s4">
+            <label for="categoria" class="white-text">Status</label>
+            <select class="browser-default" name="categoria">
+              <option value="1">Status 1</option>
+              <option value="2">Status 2</option>
+              <option value="3">Status 3</option>
+            </select>
+          </div>
+          <div class="col s4">
+            &nbsp;
+          </div>
+        </div>
+        <div class="row">
+          <div class="col s4">
+            <label for="ini_date" class="white-text">De</label>
+            <input type="date" class="datepicker" name="ini_date">
+          </div>
+          <div class="col s4">
+            <label for="end_date" class="white-text">Até</label>
+            <input type="date" class="datepicker" name="end_date">
+          </div>
+          <div class="col s4">
+            <button class="btn waves-effect waves-light" type="submit" name="action">Buscar
+              <i class="mdi-content-send right"></i>
+            </button>
+          </div>
+        </div>
       </form>
     </div>
   </div>
 
   <div class="row">
     <div class="col s12">
-      <div id="map"></div>
+      {% block content %}
+      {% endblock content %}
     </div>
   </div>
 
 <script src="http://code.jquery.com/jquery-latest.js"></script>
-<script type="text/javascript" src="http://makoframework.com/assets/js/materialize.min.js"></script>
+<script src="{% static "js/materialize.min.js" %}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/OpenLayers.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/lib/OpenLayers/Lang/pt-BR.js"></script>
-<script type="text/javascript">
+<script src="{% static "js/project.js" %}"></script>
+<script src="{% static "js/gis.js" %}"></script>
 
-$(window).resize(function () {
-      //$('#log').append('<div>Handler for .resize() called.</div>');
-         var canvasheight=$('#map').parent().css('height');
-         var canvaswidth=$('#map').parent().css('width');
-
-         $('#map').css("height", canvasheight);
-         $('#map').css("width", canvaswidth);
-
-   });
-
-$(document).ready(function() {
-  // $('select').material_select();
-  $('.datepicker').pickadate({
-    labelMonthNext: 'Próximo Mês',
-    labelMonthPrev: 'Mês Anterior',
-    labelMonthSelect: 'Selecione um mês',
-    labelYearSelect: 'Selecione um ando',
-    monthsFull: [ 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro' ],
-    monthsShort: [ 'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Aug', 'Set', 'Out', 'Nov', 'Dez' ],
-    weekdaysFull: [ 'Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado' ],
-    weekdaysShort: [ 'Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab' ],
-    weekdaysLetter: [ 'D', 'S', 'T', 'Q', 'Q', 'S', 'S' ],
-    today: 'Hoje',
-    clear: 'Limpar',
-    close: 'Fechar',
-    format: 'd/mm/yyyy'
-  });
-});
-$('a#toggle-search').click(function(){
-  var search = $('div#search');
-
-  if(search.is(":visible")){
-    search.hide();
-  }
-  else{
-    search.show();
-  }
-  return false;
-});
-
-var map;
-var epsg4326 = new OpenLayers.Projection("EPSG:4326");
-var epsg900913 = new OpenLayers.Projection("EPSG:900913");
-var wkt = new OpenLayers.Format.WKT();
-
-function init() {
-    map = new OpenLayers.Map({
-        div: "map",
-        projection: "EPSG:900913",
-        fractionalZoom: true,
-        layers: [new OpenLayers.Layer.OSM()],
-        controls: [
-        new OpenLayers.Control.Navigation({
-            dragPanOptions: {
-                enableKinetic: true
-            }
-        }),
-        // new OpenLayers.Control.Zoom(),
-        new OpenLayers.Control.ScaleLine(),
-        new OpenLayers.Control.MousePosition(),
-        new OpenLayers.Control.Permalink(), ]
-    });
-}
-
-function popup_clear() {
-    while (map.popups.length) {
-        map.removePopup(map.popups[0]);
-    }
-}
-
-function feature_click(event) {
-    popup_clear();
-    var feature = event.feature;
-    var content = "<h2>" + feature.attributes.name + "</h2>" + feature.attributes.description;
-    popup = new OpenLayers.Popup.FramedCloud(
-        "chicken",
-    feature.geometry.getBounds().getCenterLonLat(),
-    new OpenLayers.Size(100, 100),
-    content,
-    null,
-    true,
-    popup_clear);
-    feature.popup = popup;
-    map.addPopup(popup);
-}
-
-function load_ocorrencias() {
-    var ocorrencia_layer = new OpenLayers.Layer.Vector("Ocorrências");
-    var ocorrencias_wkt = [
-        {% for ocorrencia in ocorrencias %}
-        {
-            'wkt': '{{ ocorrencia.point.wkt|safe }}',
-            'name': '{{ ocorrencia.titulo }}',
-            'description': '{{ ocorrencia.descricao|escapejs }}',
-            'pk': '{{ ocorrencia.pk }}',
-            'stylesheet': {{ ocorrencia.get_estilo|safe }},
-        },
-        {% endfor %}
-    ];
-    var ocorrencias_features = [];
-    var ocorrencias_wkt_len = ocorrencias_wkt.length;
-    for (var i = ocorrencias_wkt_len; i--;) {
-        var feature = wkt.read(ocorrencias_wkt[i].wkt);
-        feature.attributes.name = ocorrencias_wkt[i].name;
-        feature.attributes.description = ocorrencias_wkt[i].description;
-        feature.style = ocorrencias_wkt[i].style;
-        ocorrencias_features.push(feature);
-    }
-    ocorrencia_layer.addFeatures(ocorrencias_features);
-    ocorrencia_layer.events.register('featureclick', ocorrencia_layer, feature_click);
-    ocorrencia_layer.events.register('nofeatureclick', ocorrencia_layer, popup_clear);
-    map.addLayer(ocorrencia_layer);
-    map.addControl(new OpenLayers.Control.DrawFeature(ocorrencia_layer, OpenLayers.Handler.Point));
-}
-
-function load_cidade_geom() {
-    var geojson_format = new OpenLayers.Format.GeoJSON();
-    var sjc_lonlat = new OpenLayers.LonLat(-45.88555, -23.17960).transform(epsg4326, epsg900913);
-    var zoom = 15;
-    map.setCenter(sjc_lonlat, zoom);
-    var cidade_layer = new OpenLayers.Layer.Vector("Limites de São José dos Campos");
-    map.addLayer(cidade_layer);
-    $.ajax({
-        dataType: "json",
-        url: "/get_current_geom/",
-        success: function (data) {
-            var features = geojson_format.read(data);
-            if (features.length >= 1) {
-                var feature = features[0];
-                feature.style = {
-                    fillColor: '#FFF',
-                    fillOpacity: 0
-                };
-                map.setOptions({
-                    restrictedExtent: feature.geometry.getBounds(),
-                    numZoomLevels: 10
-                });
-                cidade_layer.addFeatures([feature]);
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(function (position) {
-                        var current_lonlat = new OpenLayers.LonLat(
-                        position.coords.longitude,
-                        position.coords.latitude).transform(epsg4326, epsg900913);
-                        var current_point = new OpenLayers.Geometry.Point(
-                        current_lonlat.lon,
-                        current_lonlat.lat);
-                        if (feature.geometry.intersects(current_point)) {
-                            map.setCenter(current_point, zoom);
-                        }
-                    });
-                }
-            }
-        }
-    });
-}
-</script>
 {% block extra_js %}
 <script type="text/javascript">
+    function load_ocorrencias() {
+        var ocorrencia_layer = new OpenLayers.Layer.Vector("Ocorrências");
+        var ocorrencias_wkt = [
+            {% for ocorrencia in ocorrencias %}
+            {
+                'wkt': '{{ ocorrencia.point.wkt|safe }}',
+                'name': '{{ ocorrencia.titulo }}',
+                'description': '{{ ocorrencia.descricao|escapejs }}',
+                'pk': '{{ ocorrencia.pk }}',
+                'stylesheet': {{ ocorrencia.get_estilo|safe }},
+            },
+            {% endfor %}
+        ];
+        var ocorrencias_features = [];
+        var ocorrencias_wkt_len = ocorrencias_wkt.length;
+        for (var i = ocorrencias_wkt_len; i--;) {
+            var feature = wkt.read(ocorrencias_wkt[i].wkt);
+            feature.attributes.name = ocorrencias_wkt[i].name;
+            feature.attributes.description = ocorrencias_wkt[i].description;
+            feature.style = ocorrencias_wkt[i].style;
+            ocorrencias_features.push(feature);
+        }
+        ocorrencia_layer.addFeatures(ocorrencias_features);
+        ocorrencia_layer.events.register('featureclick', ocorrencia_layer, feature_click);
+        ocorrencia_layer.events.register('nofeatureclick', ocorrencia_layer, popup_clear);
+        map.addLayer(ocorrencia_layer);
+        map.addControl(new OpenLayers.Control.DrawFeature(ocorrencia_layer, OpenLayers.Handler.Point));
+    }
     $(document).ready(function(){
       init();
       load_cidade_geom();

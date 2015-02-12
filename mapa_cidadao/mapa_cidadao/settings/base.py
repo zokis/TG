@@ -205,7 +205,8 @@ THIRD_PARTY_APPS = (
     # Database migration helpers:
     'social_auth',
     'municipios',
-    'django_extensions',
+    'materialize_forms',
+    # 'django_extensions',
 )
 
 # Apps specific for this project go here.

@@ -1,11 +1,6 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
-{% load bootstrap_toolkit %}
-
-{% block extra_css %}
-    <link href="{% static 'css/select2/select2.css' %}" rel="stylesheet">
-    <link href="{% static 'css/select2/select2-bootstrap.css' %}" rel="stylesheet">
-{% endblock extra_css %}
+{% load materialize %}
 
 {% block content %}
     <div id="map"></div>
@@ -25,13 +20,16 @@
                 {% for error in form.non_field_errors %}
                     <p>{{ error }}</p>
                 {% endfor %}
-            </div>
+                </div>
             {% endif %}
-            {{ form.categoria|as_bootstrap }}
-            {{ form.titulo|as_bootstrap }}
-            {{ form.descricao|as_bootstrap }}
+            {{ form.categoria|as_material:"s12" }}
+            {{ form.titulo|as_material:"s12" }}
+            {{ form.descricao|as_material:"s12" }}
             {{ form.geom }}
-            <input type="submit" value="Salvar Ocorrência" class="btn btn-primary">
+            <button class="btn waves-effect waves-light" type="submit" name="action">
+              Salavr Ocorrência
+              <i class="mdi-content-send right"></i>
+            </button>
         </form>
     </div>
 {% endblock content %}
@@ -46,11 +44,6 @@
         init();
         load_cidade_geom();
         mapa_cidadao_draw_component(geom, '.container-full');
-        $("#id_categoria").select2({allowClear: false});
-        $(function() {
-            $('#mover').mover_h('#form-overlay');
-            $('#mover').mover_v('#form-overlay');
-        });
     });
 </script>
 

@@ -159,9 +159,6 @@ class OcorrenciaForm(forms.ModelForm):
         self.fields['descricao'].widget.attrs['cols'] = "40"
         self.fields['categoria'].empty_label = None
 
-        for key, field in self.fields.items():
-            field.widget.attrs['class'] = 'input-xxlarge'
-
     def clean(self):
         cleaned_data = super(OcorrenciaForm, self).clean()
 
