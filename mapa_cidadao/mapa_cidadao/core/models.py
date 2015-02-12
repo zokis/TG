@@ -11,15 +11,6 @@ from django.db import IntegrityError
 from jsonfield import JSONField
 
 
-STATUS_CHOICES = (
-    (1, u'Aberto'),
-    (2, u'Resolvido'),
-    (3, u'Reaberto'),
-    (4, u'Inapropriado'),
-    (5, u'Spam')
-)
-
-
 class Categoria(models.Model):
     ESTILO = {
         'graphicWidth': 32,
@@ -46,19 +37,27 @@ class Categoria(models.Model):
 
 
 class Ocorrencia(models.Model):
+    STATUS_CHOICES = (
+        (1, u'Aberto'),
+        (2, u'Resolvido'),
+        (3, u'Reaberto'),
+        (4, u'Inapropriado'),
+        (5, u'Spam')
+    )
+
     ponto = models.PointField('ponto', srid=900913, null=True, blank=True)
     categoria = models.ForeignKey(Categoria)
     status = models.SmallIntegerField('status', choices=STATUS_CHOICES, default=1)
     titulo = models.CharField(u'Título', max_length=120, blank=False, null=False)
     descricao = models.TextField(u'Descrição', blank=True, null=True)
     user = models.ForeignKey(User)
+    date_add = models.DateTimeField(auto_now_add=True, blank=True, null=True)
 
     def user_can_delete(self, user):
         return user == self.user
 
     def get_estilo(self):
         estilo = self.categoria.get_estilo()
-
         if not estilo:
             estilo = {
                 'fillColor': '#F00',
@@ -115,15 +114,6 @@ class Ocorrencia(models.Model):
         else:
             return super(Ocorrencia, self).save(*args, **kwargs)
 
-    _types = {
-        True: 'poligono',
-        False: 'ponto'
-    }
-
-    @property
-    def type(self):
-        return self._types[self.ponto is None]
-
     objects = models.GeoManager()
 
 
@@ -170,20 +160,3 @@ class Veto(models.Model):
 
     class Meta:
         ordering = ('date_add',)
-
-
-def custom_objects(Manager=models.Manager, QuerySet=models.query.QuerySet):
-    def oe_inner(Mixin, Manager=models.Manager, QuerySet=models.query.QuerySet):
-        class MixinManager(Manager, Mixin):
-            class MixinQuerySet(QuerySet, Mixin):
-                pass
-
-            def get_query_set(self):
-                return self.MixinQuerySet(self.model, using=self._db)
-
-        return MixinManager()
-
-    if issubclass(Manager, models.Manager):
-        return lambda Mixin: oe_inner(Mixin, Manager, QuerySet)
-    else:
-        return oe_inner(Mixin=Manager)

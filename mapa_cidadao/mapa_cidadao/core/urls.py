@@ -9,6 +9,7 @@ from mapa_cidadao.core.models import Ocorrencia
 urlpatterns = patterns(
     '',
     url(r'^$', 'mapa_cidadao.core.views.index', name='index'),
+    url(r'^teste/$', 'mapa_cidadao.core.views.teste', name='teste'),
     url(r'^contato/$', 'mapa_cidadao.core.views.contact', name='contact'),
     url(r'^sobre/$', 'mapa_cidadao.core.views.about', name='about'),
     url(r'^get_current_geom/$', 'mapa_cidadao.core.views.get_current_geom', name='get_current_geom'),

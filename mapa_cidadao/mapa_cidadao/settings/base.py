@@ -1,11 +1,10 @@
-"""Common settings and globals."""
-
+from .facebook_settings import FACEBOOK_APP_ID, FACEBOOK_API_SECRET
 
 from os.path import abspath, basename, dirname, join, normpath
 from sys import path
 
 
-########## PATH CONFIGURATION
+# ######### PATH CONFIGURATION
 # Absolute filesystem path to the Django project directory:
 DJANGO_ROOT = dirname(dirname(abspath(__file__)))
 
@@ -18,19 +17,19 @@ SITE_NAME = basename(DJANGO_ROOT)
 # Add our project to our pythonpath, this way we don't need to type our project
 # name in our dotted import paths:
 path.append(DJANGO_ROOT)
-########## END PATH CONFIGURATION
+# ######### END PATH CONFIGURATION
 
 
-########## DEBUG CONFIGURATION
+# ######### DEBUG CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
 DEBUG = False
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-debug
 TEMPLATE_DEBUG = DEBUG
-########## END DEBUG CONFIGURATION
+# ######### END DEBUG CONFIGURATION
 
 
-########## MANAGER CONFIGURATION
+# ######### MANAGER CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#admins
 ADMINS = (
     ('Your Name', 'your_email@example.com'),
@@ -38,10 +37,10 @@ ADMINS = (
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#managers
 MANAGERS = ADMINS
-########## END MANAGER CONFIGURATION
+# ######### END MANAGER CONFIGURATION
 
 
-########## DATABASE CONFIGURATION
+# ######### DATABASE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES = {
     'default': {
@@ -53,10 +52,10 @@ DATABASES = {
         'PORT': '',
     }
 }
-########## END DATABASE CONFIGURATION
+# ######### END DATABASE CONFIGURATION
 
 
-########## GENERAL CONFIGURATION
+# ######### GENERAL CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#time-zone
 TIME_ZONE = 'America/Sao_Paulo'
 
@@ -74,19 +73,19 @@ USE_L10N = True
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#use-tz
 USE_TZ = True
-########## END GENERAL CONFIGURATION
+# ######### END GENERAL CONFIGURATION
 
 
-########## MEDIA CONFIGURATION
+# ######### MEDIA CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#media-root
 MEDIA_ROOT = normpath(join(SITE_ROOT, 'media'))
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#media-url
 MEDIA_URL = '/media/'
-########## END MEDIA CONFIGURATION
+# ######### END MEDIA CONFIGURATION
 
 
-########## STATIC FILE CONFIGURATION
+# ######### STATIC FILE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#static-root
 STATIC_ROOT = normpath(join(SITE_ROOT, 'assets'))
 
@@ -103,32 +102,32 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )
-########## END STATIC FILE CONFIGURATION
+# ######### END STATIC FILE CONFIGURATION
 
 
-########## SECRET CONFIGURATION
+# ######### SECRET CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
 # Note: This key only used for development and testing.
 SECRET_KEY = r"r)cbeq%hj_#pp-tn-sitcu%3d&7)l1w0qe-9#j9-3w(+$u&t)e"
-########## END SECRET CONFIGURATION
+# ######### END SECRET CONFIGURATION
 
 
-########## SITE CONFIGURATION
+# ######### SITE CONFIGURATION
 # Hosts/domain names that are valid for this site
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = []
-########## END SITE CONFIGURATION
+# ######### END SITE CONFIGURATION
 
 
-########## FIXTURE CONFIGURATION
+# ######### FIXTURE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-FIXTURE_DIRS
 FIXTURE_DIRS = (
     normpath(join(SITE_ROOT, 'fixtures')),
 )
-########## END FIXTURE CONFIGURATION
+# ######### END FIXTURE CONFIGURATION
 
 
-########## TEMPLATE CONFIGURATION
+# ######### TEMPLATE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-context-processors
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
@@ -152,53 +151,49 @@ TEMPLATE_LOADERS = (
 TEMPLATE_DIRS = (
     normpath(join(SITE_ROOT, 'templates')),
 )
-########## END TEMPLATE CONFIGURATION
+# ######### END TEMPLATE CONFIGURATION
 
 
-########## MIDDLEWARE CONFIGURATION
+# ######### MIDDLEWARE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#middleware-classes
 MIDDLEWARE_CLASSES = (
     # Default Django middleware.
-    'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
-########## END MIDDLEWARE CONFIGURATION
+# ######### END MIDDLEWARE CONFIGURATION
 
 
-########## AUTHENTICATION CONFIGURATION
+# ######### AUTHENTICATION CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#auth
 AUTHENTICATION_BACKENDS = (
     'social_auth.backends.facebook.FacebookBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
-########## END AUTHENTICATION CONFIGURATION
+# ######### END AUTHENTICATION CONFIGURATION
 
-########## URL CONFIGURATION
+# ######### URL CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#root-urlconf
 ROOT_URLCONF = '%s.urls' % SITE_NAME
-########## END URL CONFIGURATION
+# ######### END URL CONFIGURATION
 
 
-########## APP CONFIGURATION
+# ######### APP CONFIGURATION
 DJANGO_APPS = (
     # Default Django apps:
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
     # Useful template tags:
     # 'django.contrib.humanize',
-
-    # Admin panel and documentation:
-    'django.contrib.admin',
-    # 'django.contrib.admindocs',
 )
 
 THIRD_PARTY_APPS = (
@@ -216,10 +211,10 @@ LOCAL_APPS = (
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
-########## END APP CONFIGURATION
+# ######### END APP CONFIGURATION
 
 
-########## LOGGING CONFIGURATION
+# ######### LOGGING CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#logging
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
@@ -249,43 +244,41 @@ LOGGING = {
         },
     }
 }
-########## END LOGGING CONFIGURATION
+# ######### END LOGGING CONFIGURATION
 
-########## WSGI CONFIGURATION
+# ######### WSGI CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#wsgi-application
 WSGI_APPLICATION = 'wsgi.application'
-########## END WSGI CONFIGURATION
+# ######### END WSGI CONFIGURATION
 
 
-########## DEFINE SOUTH CONFIGURATION
+# ######### DEFINE SOUTH CONFIGURATION
 # See: http://south.readthedocs.org/en/latest/settings.html#south-tests-migrate
 SOUTH_TESTS_MIGRATE = False
-########## END SOUTH CONFIG
+# ######### END SOUTH CONFIG
 
 
-########## FACEBOOK LOGIN CONFIGURATION
+# ######### FACEBOOK LOGIN CONFIGURATION
 LOGIN_REDIRECT_URL = '/'
 
 SESSION_SERIALIZER = 'mapa_cidadao.core.utils.JSONSerializer'
 
-#Social Auth
+# Social Auth
 SOCIAL_AUTH_COMPLETE_URL_NAME = 'socialauth_complete'
 SOCIAL_AUTH_ASSOCIATE_URL_NAME = 'socialauth_associate_complete'
 
-from .facebook_settings import FACEBOOK_APP_ID, FACEBOOK_API_SECRET
-
-#Facebook
+# Facebook
 FACEBOOK_APP_ID = FACEBOOK_APP_ID
 FACEBOOK_API_SECRET = FACEBOOK_API_SECRET
 
-########## END FACEBOOK LOGIN CONFIGURATION
+# ######### END FACEBOOK LOGIN CONFIGURATION
 
-########## DEFINE DJANGO MUNICIPIOS CONFIGURATION
+# ######### DEFINE DJANGO MUNICIPIOS CONFIGURATION
 # See: https://github.com/znc-sistemas/django-municipios#utilizando-dados-geogr%C3%A1ficos
 MUNICIPIOS_GEO = True
 MUNICIPIOS_SRID = 900913
-########## END DJANGO MUNICIPIOS CONFIGURATION
+# ######### END DJANGO MUNICIPIOS CONFIGURATION
 
-########## DEFINE THE NUMBER OF SPAM COMPLAINTS FOR AUTOMATIC DELETION
+# ######### DEFINE THE NUMBER OF SPAM COMPLAINTS FOR AUTOMATIC DELETION
 SPAM_DELETE = 10
-########## END SPAM DELETION
+# ######### END SPAM DELETION

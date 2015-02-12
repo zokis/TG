@@ -4,18 +4,14 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
-from django.db.models import Q
 from django.db.models.loading import get_model
-from django.http import Http404
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.shortcuts import render_to_response
-from django.views.generic.edit import FormMixin
-from django.views.generic.list import ListView
 
 from municipios.models import Municipio
 
-from mapa_cidadao.core.forms import OcorrenciaForm, ContatoForm
+from mapa_cidadao.core.forms import OcorrenciaForm, ContatoForm, SearchForm
 from mapa_cidadao.core.models import Ocorrencia
 
 
@@ -46,52 +42,35 @@ def get_current_geom(request):
     )
 
 
-class SearchFormListView(FormMixin, ListView):
-    '''
-        Classe de view para colocar um filtro
-        na ListView
-    '''
-
-    http_method_names = ['get']
-    filter_by_user = False
-
-    def get_form_kwargs(self):
-        return {'initial': self.get_initial(), 'data': self.request.GET}
-
-    def get_context_data(self, *args, **kwargs):
-        context = super(SearchFormListView, self).get_context_data(*args, **kwargs)
-        query_string = self.request.GET.copy()
-        query_string.pop('page', '1')
-        context['query_string'] = query_string.urlencode()
-        return context
-
-    def get(self, request, *args, **kwargs):
-        self.form = self.get_form(self.get_form_class())
-        if self.form.is_valid():
-            self.object_list = self.form.get_result_queryset()
-        else:
-            self.object_list = self.get_queryset()
-
-        if self.filter_by_user:
-            self.object_list.by_user(self.request.user)
-
-        context = self.get_context_data(
-            object_list=self.object_list,
-            form=self.form,
-            url_params=request.GET.urlencode()
-        )
-
-        return self.render_to_response(context)
-
-
 def index(request):
     geom = get_geom_from_cache()
-    return render_to_response(
+    search_form = SearchForm(request.POST or None, geom=geom)
+    ocorrencias = search_form.get_queryset()
+
+    return render(
+        request,
         'index.html',
         {
+            'ocorrencias': ocorrencias,
             'request': request,
+            'search_form': search_form,
             'user': request.user,
-            'ocorrencias': Ocorrencia.objects.filter(Q(ponto__intersects=geom)),
+        }
+    )
+
+
+def teste(request):
+    geom = get_geom_from_cache()
+    search_form = SearchForm(request.GET or None, geom=geom)
+    ocorrencias = search_form.get_queryset()
+
+    return render_to_response(
+        'teste.html',
+        {
+            'ocorrencias': ocorrencias,
+            'request': request,
+            'search_form': search_form,
+            'user': request.user,
         }
     )
 
@@ -108,7 +87,7 @@ def contact(request):
 
 
 def about(request):
-    return render_to_response('forms/about.html',{})
+    return render_to_response('forms/about.html', {})
 
 
 @login_required

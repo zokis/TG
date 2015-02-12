@@ -1,6 +1,5 @@
 {% load materialize %}
 {% for choice_id, choice_label in field.field.choices %}
-        <label for>Materialize Disabled</label>
         <input
             type="{{ type }}"
             name="{{ field.html_name }}"
@@ -13,5 +12,7 @@
             {{ field.field.widget.attrs|html_attrs }}
         />
         {{ choice_label }}
-    </label>
+
+    {{ field }}
+    <label for="{{ field.auto_id }}">{{ field.label }}</label>
 {% endfor %}
