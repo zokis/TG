@@ -1,4 +1,4 @@
-{% load staticfiles %}
+{% load staticfiles %}{% load materialize %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -10,7 +10,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta charset="utf-8">
   
-  <meta name="author" content="Jakub Sobotka">
+  <meta name="author" content="Marcelo Fonseca Tambalo">
   <meta name="description" content="">
   <meta name="keywords" content="">
   <meta name="robots" content="index,follow">
@@ -25,7 +25,9 @@
       <div class="col s12">
         -<a href="#!" class="brand-logo"><i class="mdi-maps-map left"></i> Mapa do Cidadão</a>
         <ul class="right hide-on-med-and-down">
+          {% if search_form %}
           <li><a href="#" id="toggle-search"><i class="mdi-action-search left"></i>Busca</a></li>
+          {% endif %}
           <li><a href="#"><i class="mdi-action-trending-up left"></i>Estatísticas</a></li>
           {% if user.is_anonymous %}
           <li><a href="{% url 'socialauth_begin' 'facebook' %}"><i class="mdi-social-public left"></i> Login com o Facebook</a></li>
@@ -37,40 +39,21 @@
       </div>
     </div>
   </nav>
+  {% if search_form %}
   <div class="row blue darken-3" id="search">
     <div class="container">
-      <form action="#" method="GET">
+      <form method="POST">
+        {% csrf_token %}
         <div class="row">
-          <div class="col s4">
-            <label for="categoria" class="white-text">Categoria</label>
-            <select class="browser-default" name="categoria">
-              <option value="1">Categoria 1</option>
-              <option value="2">Categoria 2</option>
-              <option value="3">Categoria 3</option>
-            </select>
-          </div>
-          <div class="col s4">
-            <label for="categoria" class="white-text">Status</label>
-            <select class="browser-default" name="categoria">
-              <option value="1">Status 1</option>
-              <option value="2">Status 2</option>
-              <option value="3">Status 3</option>
-            </select>
-          </div>
-          <div class="col s4">
-            &nbsp;
-          </div>
+          {{ search_form.categoria|as_material }}
+          {{ search_form.status|as_material }}
         </div>
         <div class="row">
-          <div class="col s4">
-            <label for="ini_date" class="white-text">De</label>
-            <input type="date" class="datepicker" name="ini_date">
-          </div>
-          <div class="col s4">
-            <label for="end_date" class="white-text">Até</label>
-            <input type="date" class="datepicker" name="end_date">
-          </div>
-          <div class="col s4">
+          {{ search_form.data_ini|as_material }}
+          {{ search_form.data_fim|as_material }}
+        </div>
+        <div class="row">
+          <div class="col s12">
             <button class="btn waves-effect waves-light" type="submit" name="action">Buscar
               <i class="mdi-content-send right"></i>
             </button>
@@ -79,6 +62,7 @@
       </form>
     </div>
   </div>
+  {% endif %}
 
   <div class="row">
     <div class="col s12">
