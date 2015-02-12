@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load materialize %}
+{% block content %}
+
+{{ search_form.categoria|as_material }}
+{{ search_form.data_ini|as_material }}
+{{ search_form.data_fim|as_material }}
+{{ search_form.status|as_material }}
+
+{% endblock content %}
