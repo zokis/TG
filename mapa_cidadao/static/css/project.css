@@ -26,10 +26,6 @@
   box-shadow: none;
   border-bottom: 1px solid #00AE96;
 }
-html {
-  overflow: hidden; 
-  height: 100%;;
-}
 #map{
   left: 0;
   position: absolute;
@@ -49,7 +45,7 @@ html {
 #form-overlay{
   position:absolute; 
   z-index:9997; 
-  border: 10px #157065 inset;
+  border: 10px #2196F3 inset;
   width: 500px;
   background-color:#ffffff;
   padding-top:10px;
