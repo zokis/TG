@@ -5,6 +5,9 @@
 {% block content %}
     <div id="map"></div>
 
+    <div id="tools">
+    </div>
+
     <div id="form-overlay">
         <center>
             <h4>
@@ -43,7 +46,7 @@
     $(document).ready(function(){
         init();
         load_cidade_geom();
-        // mapa_cidadao_draw_component(geom, '.container-full');
+        mapa_cidadao_draw_component(geom, '#tools');
     });
 
     $(function() {

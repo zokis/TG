@@ -108,3 +108,94 @@ $('a#toggle-search').click(function(){
   }
   return false;
 });
+
+
+function mapa_cidadao_draw_component(geom, container){
+
+    var mapa_cidadao_style = {
+        fillColor: '#F00',
+        fillOpacity: 0.5,
+        strokeWidth: 1,
+        strokeColor: '#000',
+    };
+
+    var component_style = '<style type="text/css">' +
+        '#draw-point{' +
+        'position:absolute; ' +
+        'right:80px; ' +
+        'top:70px;' +
+        'z-index:10000; ' +
+        '}' +
+        '#pam{' +
+        'position:absolute; ' +
+        'right:240px; ' +
+        'top:70px; ' +
+        'z-index:10000; ' +
+        '}' +
+        '</style>';
+
+    $('html > head').append(component_style);
+
+    var component_html = '' +
+        '<button class="btn" id="draw-point" title="Adicionar um Ponto">' +
+        '<img width="26" height="26" src="https://cdn1.iconfinder.com/data/icons/mirrored-twins-icon-set-hollow/128/PixelKit_point_marker_icon.png">' +
+        '</button>' +
+        '<button class="btn btn-success" id="pam" title="Mover-se pelo Mapa">' +
+        '<img width="26" height="26" src="https://cdn3.iconfinder.com/data/icons/wpzoom-developer-icon-set/500/142-48.png">' +
+        '</button>';
+    
+    $(container).append(component_html);
+
+    var pontos_layer = new OpenLayers.Layer.Vector("Pontos");
+
+    map.addLayers([pontos_layer]);
+
+    if(geom !== ''){
+        geom = wkt.read(geom);
+        geom.style = mapa_cidadao_style;
+        if(geom.geometry.x || geom.geometry.y){
+            geom.style.pointRadius = 4;
+            pontos_layer.addFeatures(geom);
+        }
+    }
+
+    var point_control = new OpenLayers.Control.DrawFeature(
+        pontos_layer,
+        OpenLayers.Handler.Point
+    );
+    map.addControl(point_control);
+
+    function add_new_feature(layer, new_feature){
+        new_feature.style = mapa_cidadao_style;
+        if(new_feature.geometry.x || new_feature.geometry.y){
+            new_feature.style.pointRadius = 4;
+        }
+
+        $('#id_geom').val(wkt.write(new_feature));
+
+        var features_len = layer.features.length;
+        for(var i=features_len; i--;){
+            var feature = layer.features[i];
+            if(feature.id != new_feature.id){
+                layer.removeFeatures(feature);
+            }
+        }
+    }
+
+    pontos_layer.events.on({
+        'beforefeatureadded': function(event){
+            add_new_feature(pontos_layer, event.feature);
+        }
+    });
+
+    $('#draw-point').click(function (){
+        point_control.activate();
+        $(this).addClass("btn-success");
+        $('#pam').removeClass("btn-success");
+    });
+    $('#pam').click(function (){
+        point_control.deactivate();
+        $(this).addClass("btn-success");
+        $('#draw-point').removeClass("btn-success");
+    });
+}
