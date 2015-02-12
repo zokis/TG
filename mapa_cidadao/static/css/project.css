@@ -48,33 +48,14 @@ html {
 
 #form-overlay{
   position:absolute; 
-  left:80px; 
-  top:70px; 
   z-index:9997; 
-  width:550px;
-  height:700px;
-
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=70)";
-  filter: alpha(opacity=75);
-  -moz-opacity:0.75;
-  -khtml-opacity:0.75;
-  opacity:0.75;
   border: 10px #157065 inset;
-
+  width: 500px;
   background-color:#ffffff;
-
   padding-top:10px;
   padding-left:10px;
   padding-right:10px;
   padding-bottom:5px;
-
-  -webkit-border-radius:50px;
-  -moz-border-radius:50px;
-  border-radius:50px;
-
-  -webkit-border-top-right-radius: 0px;
-  -moz-border-radius-topright: 0px;
-  border-top-right-radius: 0px;
 
   -moz-box-shadow: -5px 5px 5px 0px #31594f;
   -webkit-box-shadow: -5px 5px 5px 0px #31594f;
@@ -112,4 +93,17 @@ html {
     position: absolute;
     left: -8px;
     top: 5px;
+}
+
+.mc_mover_form{
+    height:48px;
+    width: 48px;
+    position:absolute;
+    top:3px;
+    right:3px;
+
+    -webkit-border-radius:6px;
+    -moz-border-radius:6px;
+    border-radius:6px;
+    font-size: 3em;
 }

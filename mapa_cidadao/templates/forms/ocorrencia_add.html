@@ -11,7 +11,9 @@
                 Nova Ocorrência
             </h4>
         </center>
-        <div id="mover" class="mover"></div>
+        <div id="mc_mover_form" class="mc_mover_form">
+            <i class="mdi-action-open-with"></i>
+        </div>
         <hr>
         <form method="POST">
             {% csrf_token %}
@@ -35,15 +37,18 @@
 {% endblock content %}
 
 {% block extra_js %}
-<script type="text/javascript" src="{% static 'js/select2/select2.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/select2/select2_locale_pt-BR.js' %}"></script>
 
 <script type="text/javascript">
     var geom = '{{ geom }}';
     $(document).ready(function(){
         init();
         load_cidade_geom();
-        mapa_cidadao_draw_component(geom, '.container-full');
+        // mapa_cidadao_draw_component(geom, '.container-full');
+    });
+
+    $(function() {
+        $('#mc_mover_form').mover_h('#form-overlay');
+        $('#mc_mover_form').mover_v('#form-overlay');
     });
 </script>
 
