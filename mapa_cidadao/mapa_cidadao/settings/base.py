@@ -203,11 +203,9 @@ DJANGO_APPS = (
 
 THIRD_PARTY_APPS = (
     # Database migration helpers:
-    'south',
     'social_auth',
     'municipios',
     'django_extensions',
-    'bootstrap_toolkit',
 )
 
 # Apps specific for this project go here.
