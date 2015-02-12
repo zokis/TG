@@ -1,4 +1,4 @@
-Django==1.6.4
+Django==1.7.4
 Pygments==1.6
 South==0.8.1
 argparse==1.2.1
