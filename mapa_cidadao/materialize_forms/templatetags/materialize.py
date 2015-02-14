@@ -41,7 +41,7 @@ def as_material(field, col='s6'):
         input_type = u'radioset'
     elif isinstance(widget, widgets.Select):
         input_type = u'select'
-        add_css_class_widget(widget, 'browser-default')
+        # add_css_class_widget(widget, 'browser-default')
     else:
         input_type = u'default'
 
