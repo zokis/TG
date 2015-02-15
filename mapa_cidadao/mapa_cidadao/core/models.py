@@ -100,11 +100,6 @@ class Ocorrencia(models.Model):
 
     def set_ponto(self, ponto):
         self.ponto = ponto
-        self.poligono = None
-
-    def set_poligono(self, poligono):
-        self.poligono = poligono
-        self.ponto = None
 
     def save(self, *args, **kwargs):
         if not self.poligono and not self.ponto:
@@ -123,13 +118,12 @@ class Spam(models.Model):
 
     @classmethod
     def add_spam(cls, ocorrencia):
-        spam = cls.objects.get(ocorrencia=ocorrencia)
-        spam.contagem = (spam.contagem or 1) + 1
+        spam = cls.objects.get_or_create(ocorrencia=ocorrencia)
+        spam.contagem = (spam.contagem or 0) + 1
         if spam.contagem >= settings.SPAM_DELETE:
-            spam.ocorrencia.delete()
+            ocorrencia.delete()
         else:
             spam.save()
-            return spam
 
 
 class Voto(models.Model):

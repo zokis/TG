@@ -94,17 +94,30 @@ def about(request):
 
 
 def votar(request, pk, op='voto'):
-    ocorrencia = get_object_or_404(Ocorrencia, pk=pk)
-    try:
-        if op == 'voto':
-            ocorrencia.votar(request.user)
-        else:
-            ocorrencia.vetar(request.user)
-        messages.success(request, u"Voto computado")
-    except Exception as e:
-        messages.error(request, unicode(e))
-    return redirect(reverse('ocorrencia_detail', args=(ocorrencia.pk,)))
+    if request.method == "POST":
+        ocorrencia = get_object_or_404(Ocorrencia, pk=pk)
+        try:
+            if op == 'voto':
+                ocorrencia.votar(request.user)
+            else:
+                ocorrencia.vetar(request.user)
+            messages.success(request, u"Voto computado")
+        except Exception as e:
+            messages.error(request, unicode(e))
+    return redirect(reverse('ocorrencia_detail', args=(pk,)))
 
+
+def spam(request, pk):
+    if request.method == "POST":
+        ocorrencia = get_object_or_404(Ocorrencia, pk=pk)
+        try:
+            ocorrencia.vetar(request.user)
+            Spam.add_spam(ocorrencia)
+            messages.success(request, u"Ocorrência Marcada como Spam")
+        except Exception as e:
+            messages.error(request, u"Você não pode marcar essa ocorrência como Spam!")
+
+    return redirect(reverse('ocorrencia_detail', args=(pk,)))
 
 
 @login_required

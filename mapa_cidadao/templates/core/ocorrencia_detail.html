@@ -40,7 +40,7 @@
                 </div>
                 <div class="col s1">
                 {% if user.pk == object.user.pk %}
-                    <a href="#" class="waves-effect waves-light btn rigth">
+                    <a href="{% url 'ocorrencia_crud' object.pk %}" class="waves-effect waves-light btn rigth">
                         Editar
                         <i class="mdi-content-send right"></i>
                     </a>
@@ -92,26 +92,35 @@
                 <div class="progress red lighten-5" id="bar-vetos">
                     <div class="determinate red" style="width: 50%"></div>
                 </div>
-
+            </div>
+            <div class="row">
                 {% if not is_anonymous %}
                     {% if user.pk != object.user.pk %}
                         {% if object|can_votar:user %}
-                            <a class="waves-effect waves-light btn" href="{% url 'votar' object.pk 'votar' %}">
-                                <i class="mdi-action-thumb-up"></i>
-                            </a>
+                            <div class="col s2">
+                                <form method="POST" action="{% url 'votar' object.pk 'votar' %}">
+                                    <button class="waves-effect waves-light btn" type="submit" title="Votar">
+                                        <i class="mdi-action-thumb-up"></i>
+                                    </button>
+                                </form>
+                            </div>
                         {% endif %}
 
                         {% if object|can_vetar:user %}
-                            <a class="waves-effect waves-light btn" href="{% url 'votar' object.pk 'vetar' %}">
-                                <i class="mdi-action-thumb-down"></i>
-                            </a>
+                            <div class="col s10">
+                                <form method="POST" action="{% url 'votar' object.pk 'vetar' %}">
+                                    <button class="waves-effect waves-light btn" type="submit" title="Vetar">
+                                        <i class="mdi-action-thumb-down"></i>
+                                    </button>
+                                </form>
+                            </div>
                         {% endif %}
                     {% endif %}
                 {% endif %}
             </div>
         </div>
         <div class="col s6">
-        <div id="map"></div>
+            <div id="map"></div>
         </div>
     </div>
     

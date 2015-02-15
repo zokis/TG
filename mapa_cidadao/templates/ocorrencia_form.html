@@ -56,6 +56,12 @@
 
 <script type="text/javascript">
     var geom = '{{ geom }}';
+
+    var map_height = function () {
+        $('#map').css('height', $(window).height()- $('nav').height());
+        $('#map').css('top', ($('nav').height()) + 'px');
+    };
+
     $(document).ready(function(){
         init();
         load_cidade_geom();
@@ -68,6 +74,10 @@
 
         $('#mc_mover_form').mover_h('#form-overlay');
         $('#mc_mover_form').mover_v('#form-overlay');
+
+        map_height();
+        $(window).resize(map_height);
+
     });
 </script>
 

@@ -87,6 +87,10 @@
 
 {% block extra_js %}
 <script type="text/javascript">
+    var map_height = function () {
+        $('#map').css('height', $(window).height()- $('nav').height());
+        $('#map').css('top', ($('nav').height()) + 'px');
+    };
     function load_ocorrencias() {
         var ocorrencia_layer = new OpenLayers.Layer.Vector("Ocorrências");
         var ocorrencias_wkt = [
@@ -119,6 +123,8 @@
       init();
       load_cidade_geom();
       load_ocorrencias();
+      map_height();
+      $(window).resize(map_height);
     });
 </script>
 {% endblock extra_js %}
