@@ -7,72 +7,114 @@
     <link href="{% static 'css/select2/select2-bootstrap.css' %}" rel="stylesheet">
     <style type="text/css">
         #map{
-            border-left: 10px #157065 inset;
-            -webkit-border-bottom-left-radius: 5px;
-            -moz-border-radius-bottomleft: 5px;
-            border-bottom-left-radius: 5px;
+            position: relative;
+            top: auto;
+            left: auto;
+            width: 100%;
+            height: 500px;
+
+            -webkit-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+            -moz-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+            box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+            border: 1px #2196F3 inset;
         }
     </style>
 {% endblock extra_css %}
 
 {% block content %}
-<div class="row-fluid">
-    <div class="span4" style="padding-left:2.564102564102564%">
-        <center>
-            <h4>
-                Ocorrência: {{ object.titulo }}
-            </h4>
-        </center>
-        <hr>
-
-        <div class="fb-like" data-href="http://localhost:8000/ocorrencia/{{ object.pk }}/detalhes/" data-layout="button" data-action="like" data-show-faces="true" data-share="true"></div>
-        {% if user.pk == object.user.pk %}
-            <a href="#" class="btn btn-small">Editar</a>
-        {% else %}
-            {% if not is_anonymous %}
-                <a href="#" class="btn btn-small btn-danger">SPAM</a>
-            {% endif %}
-        {% endif %}
-
-        <table class="table">
-            <tr>
-                <td><b>Categoria:</b></td><td>{{ object.categoria }}</td>
-            </tr>
-            <tr>
-                <td><b>Autor:</b></td><td><a target="_blank" href="https://facebook.com/{{ object.user }}/">{{ object.user }}</a></td>
-            </tr>
-            <tr>
-                <td><b>Descrição:</b></td><td colspan="2">{{ object.descricao|linebreaksbr }}</td>
-            </tr>
-            
-        </table>
-
-        
-        Votos <span id="percent-votos"></span>:
-        <div class="progress progress-success progress-striped active" id="bar-votos">
-            <div class="bar" style="width: 50%"></div>
+    <div class="row">
+        <div class="col s12">
+            <center>
+                <h4>
+                    Ocorrência: {{ object.titulo }}
+                </h4>
+            </center>
+            <hr>
         </div>
-        Vetos <span id="percent-vetos"></span>:
-        <div class="progress progress-danger progress-striped active" id="bar-vetos">
-            <div class="bar" style="width: 50%"></div>
-        </div>
-
-        {% if not is_anonymous %}
-            {% if user.pk != object.user.pk %}
-                {% if object|can_votar:user %}
-                    VOTAR
-                {% endif %}
-
-                {% if object|can_vetar:user %}
-                    VETAR
-                {% endif %}
-            {% endif %}
-        {% endif %}
     </div>
-    <div class="span8">
+    <div class="row">
+        <div class="col s6">
+            <div class="row">
+                <div class="col s2">
+                    <div class="fb-like" data-href="http://localhost:8000/ocorrencia/{{ object.pk }}/detalhes/" data-layout="button" data-action="like" data-show-faces="true" data-share="true"></div>
+                </div>
+                <div class="col s1">
+                {% if user.pk == object.user.pk %}
+                    <a href="#" class="waves-effect waves-light btn rigth">
+                        Editar
+                        <i class="mdi-content-send right"></i>
+                    </a>
+                {% else %}
+                    {% if not is_anonymous %}
+                        <a href="#" class="waves-effect waves-light btn red rigth">SPAM</a>
+                    {% endif %}
+                {% endif %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s2">
+                    <b>Categoria:</b>
+                </div>
+                <div class="col s10">
+                    {{ object.categoria }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s2">
+                    <b>Status:</b>
+                </div>
+                <div class="col s10">
+                    {{ object.get_status_display }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s2">
+                    <b>Autor:</b>
+                </div>
+                <div class="col s10">
+                    <a target="_blank" href="https://facebook.com/{{ object.user }}/">{{ object.user }}</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s2">
+                    <b>Descrição:</b>
+                </div>
+                <div class="col s10">
+                    {{ object.descricao|linebreaksbr }}
+                </div>
+            </div>
+            <div class="row">
+                Votos <span id="percent-votos"></span>:
+                <div class="progress blue lighten-5" id="bar-votos">
+                    <div class="determinate blue" style="width: 50%"></div>
+                </div>
+                Vetos <span id="percent-vetos"></span>:
+                <div class="progress red lighten-5" id="bar-vetos">
+                    <div class="determinate red" style="width: 50%"></div>
+                </div>
+
+                {% if not is_anonymous %}
+                    {% if user.pk != object.user.pk %}
+                        {% if object|can_votar:user %}
+                            <a class="waves-effect waves-light btn" href="{% url 'votar' object.pk 'votar' %}">
+                                <i class="mdi-action-thumb-up"></i>
+                            </a>
+                        {% endif %}
+
+                        {% if object|can_vetar:user %}
+                            <a class="waves-effect waves-light btn" href="{% url 'votar' object.pk 'vetar' %}">
+                                <i class="mdi-action-thumb-down"></i>
+                            </a>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+        <div class="col s6">
         <div id="map"></div>
+        </div>
     </div>
-</div>
+    
 {% endblock content %}
 
 {% block extra_js %}
@@ -86,16 +128,13 @@
   fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));</script>
 
-<script type="text/javascript" src="{% static 'js/select2/select2.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/select2/select2_locale_pt-BR.js' %}"></script>
-
 <script type="text/javascript">
-    var geom = '{% firstof object.ponto.wkt object.poligono.wkt %}';
+    var geom = '{{ object.ponto.wkt }}';
     $(document).ready(function(){
         init();
         load_cidade_geom();
-        mapa_cidadao_draw_component(geom, '.container-full');
-        $("#id_categoria").select2({allowClear: false});
+        mapa_cidadao_draw_component(geom, '#tools');
+
         var center;
         geom = wkt.read(geom);
         map.setCenter(geom.geometry.getBounds().getCenterLonLat(), 15);
@@ -105,11 +144,16 @@
         var votos_total = votos + vetos;
 
         var votos_percent = (votos * 100 / votos_total);
-        var vetos_percent = (100 - votos_percent) + '%';
-        votos_percent += '%';
+        var vetos_percent = (100 - votos_percent);
+        if(isNaN(votos_percent))
+            votos_percent = 0;
+        if(isNaN(vetos_percent))
+            vetos_percent = 0;
+        votos_percent = votos_percent + '%';
+        vetos_percent = vetos_percent + '%';
 
-        $('#bar-votos .bar').css('width', votos_percent);
-        $('#bar-vetos .bar').css('width', vetos_percent);
+        $('#bar-votos .determinate').css('width', votos_percent);
+        $('#bar-vetos .determinate').css('width', vetos_percent);
 
         $('#percent-votos').html('' + votos + ' - ' + votos_percent);
         $('#percent-vetos').html('' + vetos + ' - ' + vetos_percent);

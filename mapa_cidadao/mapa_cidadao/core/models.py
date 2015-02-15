@@ -140,7 +140,7 @@ class Voto(models.Model):
     @classmethod
     def can_votar(cls, user, ocorrencia):
         votou = cls.objects.filter(user=user, ocorrencia=ocorrencia).count()
-        vetou = cls.objects.filter(user=user, ocorrencia=ocorrencia).count()
+        vetou = Veto.objects.filter(user=user, ocorrencia=ocorrencia).count()
         return not votou and not vetou
 
     class Meta:
@@ -155,7 +155,7 @@ class Veto(models.Model):
     @classmethod
     def can_vetar(cls, user, ocorrencia):
         vetou = cls.objects.filter(user=user, ocorrencia=ocorrencia).count()
-        votou = cls.objects.filter(user=user, ocorrencia=ocorrencia).count()
+        votou = Voto.objects.filter(user=user, ocorrencia=ocorrencia).count()
         return not vetou and not votou
 
     class Meta:

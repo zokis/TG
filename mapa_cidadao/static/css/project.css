@@ -36,16 +36,17 @@
 
 #add-ocorrencia{
     position:absolute; 
-    right:30px; 
+    right:80px; 
     top:70px;
     z-index:9;
-    font-size: 5em;
+    font-size: 3em;
+    color: #000;
 }
 
 #form-overlay{
   position:absolute; 
   z-index:9997; 
-  border: 10px #2196F3 inset;
+  border: 1px #2196F3 inset;
   width: 500px;
   background-color:#ffffff;
   padding-top:10px;
@@ -53,9 +54,13 @@
   padding-right:10px;
   padding-bottom:5px;
 
-  -moz-box-shadow: -5px 5px 5px 0px #31594f;
-  -webkit-box-shadow: -5px 5px 5px 0px #31594f;
-  box-shadow: -5px 5px 5px 0px #31594f;
+  -webkit-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+  -moz-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+  box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+}
+
+.dropdown-content{
+  z-index:9999!important; 
 }
 
 .popup-label {

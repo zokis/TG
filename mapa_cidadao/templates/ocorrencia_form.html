@@ -2,6 +2,19 @@
 {% load staticfiles %}
 {% load materialize %}
 
+{% block extra_css %}
+<style type="text/css">
+    #tools{
+        font-size: 3em;
+    }
+    #tools > i{
+        -moz-border-radius: 50px;
+        -webkit-border-radius: 50px;
+        border-radius: 50px;
+    }
+</style>
+{% endblock extra_css %}
+
 {% block content %}
     <div id="map"></div>
 
@@ -53,11 +66,6 @@
             map.setCenter(geom.geometry.getBounds().getCenterLonLat(), 15);
         }
 
-        $('select').material_select();
-        console.log('aaa')
-    });
-
-    $(function() {
         $('#mc_mover_form').mover_h('#form-overlay');
         $('#mc_mover_form').mover_v('#form-overlay');
     });

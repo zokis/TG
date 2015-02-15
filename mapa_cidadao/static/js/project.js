@@ -80,7 +80,6 @@ if(typeof $.fn.mover_h == "undefined") {
 
 
 $(document).ready(function() {
-  // $('select').material_select();
   $('.datepicker').pickadate({
     labelMonthNext: 'Próximo Mês',
     labelMonthPrev: 'Mês Anterior',
@@ -96,17 +95,28 @@ $(document).ready(function() {
     close: 'Fechar',
     format: 'd/mm/yyyy'
   });
-});
-$('a#toggle-search').click(function(){
-  var search = $('div#search');
+  $('select').material_select();
+  $('a#toggle-search').click(function(){
+    var search = $('div#search');
 
-  if(search.is(":visible")){
-    search.hide();
-  }
-  else{
-    search.show();
-  }
-  return false;
+    if(search.is(":visible")){
+      search.hide();
+    }
+    else{
+      search.show();
+    }
+    return false;
+  });
+  $('.dropdown-button').dropdown({
+      inDuration: 300,
+      outDuration: 225,
+      constrain_width: true,
+      hover: false,
+      alignment: 'right',
+      gutter: 10,
+      belowOrigin: true
+    }
+  );
 });
 
 
@@ -137,12 +147,8 @@ function mapa_cidadao_draw_component(geom, container){
     $('html > head').append(component_style);
 
     var component_html = '' +
-        '<button class="btn" id="draw-point" title="Adicionar um Ponto">' +
-        '<img width="26" height="26" src="https://cdn1.iconfinder.com/data/icons/mirrored-twins-icon-set-hollow/128/PixelKit_point_marker_icon.png">' +
-        '</button>' +
-        '<button class="btn btn-success" id="pam" title="Mover-se pelo Mapa">' +
-        '<img width="26" height="26" src="https://cdn3.iconfinder.com/data/icons/wpzoom-developer-icon-set/500/142-48.png">' +
-        '</button>';
+        '<i id="draw-point" class="mdi-maps-pin-drop" title="Adicionar Novo Ponto"></i>' +
+        '<i id="pam" class="mdi-maps-navigation blue" title="Mover-se pelo Mapa">';
     
     $(container).append(component_html);
 
@@ -171,7 +177,7 @@ function mapa_cidadao_draw_component(geom, container){
             new_feature.style.pointRadius = 4;
         }
 
-        $('#id_geom').val(wkt.write(new_feature));
+        $('#id_ponto').val(wkt.write(new_feature));
 
         var features_len = layer.features.length;
         for(var i=features_len; i--;){
@@ -190,12 +196,12 @@ function mapa_cidadao_draw_component(geom, container){
 
     $('#draw-point').click(function (){
         point_control.activate();
-        $(this).addClass("btn-success");
-        $('#pam').removeClass("btn-success");
+        $(this).addClass("blue");
+        $('#pam').removeClass("blue");
     });
     $('#pam').click(function (){
         point_control.deactivate();
-        $(this).addClass("btn-success");
-        $('#draw-point').removeClass("btn-success");
+        $(this).addClass("blue");
+        $('#draw-point').removeClass("blue");
     });
 }

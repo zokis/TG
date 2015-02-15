@@ -15,10 +15,13 @@ class SearchForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         self.geom = kwargs.pop('geom')
+        self.request_user = kwargs.pop('request_user', False)
         super(SearchForm, self).__init__(*args, **kwargs)
 
     def get_queryset(self):
         ocorrencias = Ocorrencia.objects.filter(ponto__intersects=self.geom)
+        if self.request_user:
+            ocorrencias = ocorrencias.filter(user=request_user)
         if self.is_valid():
             categoria = self.cleaned_data.get('categoria', False)
             if categoria:
@@ -38,7 +41,7 @@ class SearchForm(forms.Form):
 
 
 class OcorrenciaForm(forms.ModelForm):
-    geom = forms.CharField(widget=forms.HiddenInput)
+    ponto = forms.CharField(widget=forms.HiddenInput)
 
     def __init__(self, *args, **kwargs):
         self.request_user = kwargs.pop('request_user', None)
@@ -50,10 +53,10 @@ class OcorrenciaForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super(OcorrenciaForm, self).clean()
 
-        if not cleaned_data.get('geom', False):
-            raise forms.ValidationError(u'Desenhe um polígono ou adicione um ponto')
+        if not cleaned_data.get('ponto', False):
+            raise forms.ValidationError(u'Adicione um ponto')
         try:
-            GEOSGeometry(cleaned_data['geom'])
+            GEOSGeometry(cleaned_data['ponto'])
         except:
             raise forms.ValidationError(u'Geometria Inválida')
         return cleaned_data
@@ -64,12 +67,9 @@ class OcorrenciaForm(forms.ModelForm):
 
         instance = super(OcorrenciaForm, self).save(*args, **kwargs)
 
-        geom = GEOSGeometry(self.cleaned_data['geom'])
-        if geom.geom_type == 'Point':
-            instance.set_ponto(geom)
-        else:
-            instance.set_poligono(geom)
-
+        geom = GEOSGeometry(self.cleaned_data['ponto'])
+        
+        instance.set_ponto(geom)
         instance.user = self.request_user
 
         if commit:
@@ -78,7 +78,7 @@ class OcorrenciaForm(forms.ModelForm):
 
     class Meta:
         model = Ocorrencia
-        fields = ('categoria', 'titulo', 'descricao')
+        fields = ('categoria', 'titulo', 'descricao', 'ponto')
 
 
 class ContatoForm(forms.Form):

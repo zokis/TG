@@ -31,9 +31,16 @@ function popup_clear() {
 function feature_click(event) {
     popup_clear();
     var feature = event.feature;
-    var content = "<h2>" + feature.attributes.name + "</h2>" + feature.attributes.description;
+    var content = "" +
+    "<h2>" +feature.attributes.name + "</h2>" +
+    "" + feature.attributes.description.slice(0, 51) +
+    '&nbsp;...' + 
+    '<div class="row">' +
+    '<a href="/ocorrencia/' + feature.attributes.pk + '/detalhes/" class="waves-effect waves-light btn">' +
+    'Detalhes<i class="mdi-image-details right"></i>' +
+    '</a></div>';
     popup = new OpenLayers.Popup.FramedCloud(
-        "chicken",
+    "mc-"+feature.attributes.pk,
     feature.geometry.getBounds().getCenterLonLat(),
     new OpenLayers.Size(100, 100),
     content,

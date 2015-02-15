@@ -4,7 +4,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
-  <title>Mapa do Cidadão</title>
+  <title>Mapa do Cidadão{% if title %} - {{ title }}{% endif %}</title>
 
   <!-- Seo -->
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -18,12 +18,18 @@
   <!-- CSS  -->
   <link href="{% static 'css/materialize.css' %}" type="text/css" rel="stylesheet" media="screen,projection">
   <link href="{% static 'css/project.css' %}" type="text/css" rel="stylesheet" media="screen,projection">
+  {% block extra_css %}
+  {% endblock extra_css %}
 </head>
 <body>
+  <ul id='drop-more' class='dropdown-content'>
+    <li><a href="{% url 'contact' %}">Contato</a></li>
+    <li><a href="{% url 'about' %}">Sobre</a></li>
+  </ul>
   <nav>
     <div class="nav-wrapper blue">
       <div class="col s12">
-        -<a href="#!" class="brand-logo"><i class="mdi-maps-map left"></i> Mapa do Cidadão</a>
+        -<a href="/" class="brand-logo"><i class="mdi-maps-map left"></i> Mapa do Cidadão</a>
         <ul class="right hide-on-med-and-down">
           {% if search_form %}
           <li><a href="#" id="toggle-search"><i class="mdi-action-search left"></i>Busca</a></li>
@@ -35,6 +41,7 @@
           <li><a href="#" class="navbar-link"><i class="mdi-action-view-list left"></i>Minhas Ocorrências</a></li>
           <li><a href="{% url 'logout' %}" class="navbar-link"><i class="mdi-action-exit-to-app left"></i>Sair</a></li>
           {% endif %}
+          <li><a class="dropdown-button" href="#" data-activates="drop-more"><i class="mdi-navigation-arrow-drop-down"></i></a></li>
         </ul>
       </div>
     </div>
@@ -85,11 +92,11 @@
         var ocorrencias_wkt = [
             {% for ocorrencia in ocorrencias %}
             {
-                'wkt': '{{ ocorrencia.point.wkt|safe }}',
+                'wkt': '{{ ocorrencia.ponto.wkt|safe }}',
                 'name': '{{ ocorrencia.titulo }}',
-                'description': '{{ ocorrencia.descricao|escapejs }}',
+                'description': '{{ ocorrencia.descricao|wordwrap:10|escapejs }}',
                 'pk': '{{ ocorrencia.pk }}',
-                'stylesheet': {{ ocorrencia.get_estilo|safe }},
+                'style': {{ ocorrencia.get_estilo|safe }},
             },
             {% endfor %}
         ];
@@ -98,6 +105,7 @@
         for (var i = ocorrencias_wkt_len; i--;) {
             var feature = wkt.read(ocorrencias_wkt[i].wkt);
             feature.attributes.name = ocorrencias_wkt[i].name;
+            feature.attributes.pk = ocorrencias_wkt[i].pk;
             feature.attributes.description = ocorrencias_wkt[i].description;
             feature.style = ocorrencias_wkt[i].style;
             ocorrencias_features.push(feature);
@@ -106,7 +114,6 @@
         ocorrencia_layer.events.register('featureclick', ocorrencia_layer, feature_click);
         ocorrencia_layer.events.register('nofeatureclick', ocorrencia_layer, popup_clear);
         map.addLayer(ocorrencia_layer);
-        map.addControl(new OpenLayers.Control.DrawFeature(ocorrencia_layer, OpenLayers.Handler.Point));
     }
     $(document).ready(function(){
       init();

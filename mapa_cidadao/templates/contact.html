@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load materialize %}
+{% block extra_css %}
+    <style type="text/css">
+    .contact-form{
+        width:100%;
+    }
+    </style>
+{% endblock extra_css %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col s12">
+            <h2 class="grey-text text-darken-2">
+                Contacte-nos <small class="grey-text">Sinta-se livre para entrar em contato conosco</small>
+            </h2>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <form method="POST">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col s12">
+                {{ form.assunto|as_material:"s12" }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col s12">
+                {{ form.nome|as_material }}
+                {{ form.email|as_material }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col s12">
+                {{ form.mensagem|as_material:"s12" }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col s12">
+                <button type="submit" class="waves-effect waves-light btn">
+                    Enviar Mensagem
+                    <i class="mdi-content-send right"></i>
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock content %}
+
+{% block extra_js %}
+    
+{% endblock extra_js %}
