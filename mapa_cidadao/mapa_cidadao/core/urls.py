@@ -12,4 +12,5 @@ urlpatterns = patterns(
     url(r'^ocorrencia/(?P<pk>\d+)/$', 'mapa_cidadao.core.views.ocorrencia_crud', name='ocorrencia_crud'),
     url(r'^ocorrencia/(?P<pk>\d+)/detalhes/$', 'mapa_cidadao.core.views.ocorrencia_detalhes', name='ocorrencia_detail'),
     url(r'^ocorrencia/(?P<pk>\d+)/(?P<op>(votar|vetar))/$', 'mapa_cidadao.core.views.votar', name='votar'),
+    url(r'^ocorrencia/(?P<pk>\d+)/spam/$', 'mapa_cidadao.core.views.spam', name='spam'),
 )

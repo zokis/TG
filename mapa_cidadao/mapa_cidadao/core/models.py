@@ -133,6 +133,8 @@ class Voto(models.Model):
 
     @classmethod
     def can_votar(cls, user, ocorrencia):
+        if user.is_anonymous():
+            return False
         votou = cls.objects.filter(user=user, ocorrencia=ocorrencia).count()
         vetou = Veto.objects.filter(user=user, ocorrencia=ocorrencia).count()
         return not votou and not vetou
@@ -148,6 +150,9 @@ class Veto(models.Model):
 
     @classmethod
     def can_vetar(cls, user, ocorrencia):
+        if user.is_anonymous():
+            return False
+
         vetou = cls.objects.filter(user=user, ocorrencia=ocorrencia).count()
         votou = Voto.objects.filter(user=user, ocorrencia=ocorrencia).count()
         return not vetou and not votou

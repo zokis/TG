@@ -45,8 +45,13 @@
                         <i class="mdi-content-send right"></i>
                     </a>
                 {% else %}
-                    {% if not is_anonymous %}
-                        <a href="#" class="waves-effect waves-light btn red rigth">SPAM</a>
+                    {% if not user.is_anonymous %}
+                        {% if object|can_votar:user or object|can_vetar:user %}
+                            <form method="POST" action="{% url 'spam' object.pk %}">
+                                {% csrf_token %}
+                                <button type="submit" class="waves-effect waves-light btn red rigth">SPAM</button>
+                            </form>
+                        {% endif %}
                     {% endif %}
                 {% endif %}
                 </div>
@@ -94,27 +99,25 @@
                 </div>
             </div>
             <div class="row">
-                {% if not is_anonymous %}
-                    {% if user.pk != object.user.pk %}
-                        {% if object|can_votar:user %}
-                            <div class="col s2">
-                                <form method="POST" action="{% url 'votar' object.pk 'votar' %}">
-                                    <button class="waves-effect waves-light btn" type="submit" title="Votar">
-                                        <i class="mdi-action-thumb-up"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        {% endif %}
+                {% if not user.is_anonymous %}
+                    {% if object|can_votar:user %}
+                        <div class="col s2">
+                            <form method="POST" action="{% url 'votar' object.pk 'votar' %}">
+                                <button class="waves-effect waves-light btn" type="submit" title="Votar">
+                                    <i class="mdi-action-thumb-up"></i>
+                                </button>
+                            </form>
+                        </div>
+                    {% endif %}
 
-                        {% if object|can_vetar:user %}
-                            <div class="col s10">
-                                <form method="POST" action="{% url 'votar' object.pk 'vetar' %}">
-                                    <button class="waves-effect waves-light btn" type="submit" title="Vetar">
-                                        <i class="mdi-action-thumb-down"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        {% endif %}
+                    {% if object|can_vetar:user %}
+                        <div class="col s10">
+                            <form method="POST" action="{% url 'votar' object.pk 'vetar' %}">
+                                <button class="waves-effect waves-light btn" type="submit" title="Vetar">
+                                    <i class="mdi-action-thumb-down"></i>
+                                </button>
+                            </form>
+                        </div>
                     {% endif %}
                 {% endif %}
             </div>
