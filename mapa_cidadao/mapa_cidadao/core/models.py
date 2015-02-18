@@ -76,21 +76,15 @@ class Ocorrencia(models.Model):
 
     def votar(self, user):
         if self.can_votar(user):
-            if self.user == user:
-                raise Voto.VotoException(u'Você não pode votar em uma Ocorrência sua')
-            else:
-                return Voto.objects.create(ocorrencia=self, user=user)
+            return Voto.objects.create(ocorrencia=self, user=user)
         else:
-            raise Voto.VotoException(u'Você não pode votar em uma Ocorrência que você já votou ou vetou')
+            raise Voto.VotoException(u'Você não pode votar nesta Ocorrência')
 
     def vetar(self, user):
         if self.can_vetar(user):
-            if self.user == user:
-                raise Veto.VetoException(u'Você não pode vetar em uma Ocorrência sua')
-            else:
-                return Voto.objects.create(ocorrencia=self, user=user)
+            return Voto.objects.create(ocorrencia=self, user=user)
         else:
-            raise Veto.VetoException(u'Você não pode vetar em uma Ocorrência que você já vetou ou votou')
+            raise Veto.VetoException(u'Você não pode vetar esta Ocorrência')
 
     def get_votos(self):
         return Voto.objects.filter(ocorrencia=self).count()
@@ -133,6 +127,8 @@ class Voto(models.Model):
 
     @classmethod
     def can_votar(cls, user, ocorrencia):
+        if user == ocorrencia.user:
+            return False
         if user.is_anonymous():
             return False
         votou = cls.objects.filter(user=user, ocorrencia=ocorrencia).count()
@@ -153,9 +149,10 @@ class Veto(models.Model):
 
     @classmethod
     def can_vetar(cls, user, ocorrencia):
+        if user == ocorrencia.user:
+            return False
         if user.is_anonymous():
             return False
-
         vetou = cls.objects.filter(user=user, ocorrencia=ocorrencia).count()
         votou = Voto.objects.filter(user=user, ocorrencia=ocorrencia).count()
         return not vetou and not votou
