@@ -3,8 +3,6 @@
 {% load votacao %}
 
 {% block extra_css %}
-    <link href="{% static 'css/select2/select2.css' %}" rel="stylesheet">
-    <link href="{% static 'css/select2/select2-bootstrap.css' %}" rel="stylesheet">
     <style type="text/css">
         #map{
             position: relative;
@@ -145,7 +143,6 @@
     $(document).ready(function(){
         init();
         load_cidade_geom();
-        mapa_cidadao_draw_component(geom, '#tools');
 
         var center;
         geom = wkt.read(geom);

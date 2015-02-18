@@ -8,12 +8,13 @@ from django.db.models.loading import get_model
 from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.shortcuts import render_to_response
+from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 
 from municipios.models import Municipio
 
 from mapa_cidadao.core.forms import OcorrenciaForm, ContatoForm, SearchForm
-from mapa_cidadao.core.models import Ocorrencia
+from mapa_cidadao.core.models import Ocorrencia, Spam
 
 
 MUNICIPIO_ID = getattr(settings, 'MUNICIPIO_ID', 3549904)
@@ -114,7 +115,7 @@ def spam(request, pk):
             ocorrencia.vetar(request.user)
             Spam.add_spam(ocorrencia)
             messages.success(request, u"Ocorrência Marcada como Spam")
-        except Exception as e:
+        except:
             messages.error(request, u"Você não pode marcar essa ocorrência como Spam!")
 
     return redirect(reverse('ocorrencia_detail', args=(pk,)))
@@ -159,6 +160,8 @@ def ocorrencia_crud(request, pk=None):
 
 class OcorrenciaDetailView(DetailView):
     queryset = Ocorrencia.objects
+    template_name = 'ocorrencia_detail.html'
+
     def get_context_data(self, **kwargs):
         context = super(OcorrenciaDetailView, self).get_context_data(**kwargs)
         context['title'] = u'Detalhes'
@@ -166,6 +169,24 @@ class OcorrenciaDetailView(DetailView):
 
 
 ocorrencia_detalhes = OcorrenciaDetailView.as_view()
+
+
+class OcorrenciaListView(ListView):
+    model = Ocorrencia
+    template_name = 'ocorrencia_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(OcorrenciaListView, self).get_context_data(**kwargs)
+        context['title'] = u'Minhas Ocorrências'
+        return context
+
+    def get_queryset(self):
+        queryset = super(OcorrenciaListView, self).get_queryset()
+        queryset = queryset.filter(user=self.request.user)
+        return queryset
+
+
+ocorrencia_list = OcorrenciaListView.as_view()
 
 
 @login_required
@@ -188,5 +209,3 @@ def generic_delete_from_model(request, app_model=None, object_id=None):
 
         return redirect(_next)
     raise Http404
-
-
