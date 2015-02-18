@@ -20,86 +20,88 @@
 {% endblock extra_css %}
 
 {% block content %}
-    <div class="row">
-        <div class="col s12">
-            <center>
-                <h4>
-                    Minhas Ocorrências
-                </h4>
-            </center>
-            <hr>
-        </div>
+<div class="row">
+    <div class="col s12">
+        <center>
+            <h4>
+                Minhas Ocorrências
+            </h4>
+        </center>
+        <hr>
     </div>
-    <div class="row">
-        <div class="col s6">
-            <table>
-                <thead>
+</div>
+<div class="row">
+    <div class="col s6">
+        <table id="ocorrencias-table">
+            <thead>
+                <tr>
+                    <th>Título</th>
+                    <th>Data</th>
+                    <th>Status</th>
+                    <th>Categoria</th>
+                    <th>Ver no Mapa</th>
+                    <th>Detalhes</th>
+                    <th>Deletar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for object in object_list %}
                     <tr>
-                        <th>Título</th>
-                        <th>Data</th>
-                        <th>Status</th>
-                        <th>Categoria</th>
-                        <th>Ver no Mapa</th>
-                        <th>Detalhes</th>
-                        <th>Deletar</th>
+                        <td><a href="{% url 'ocorrencia_crud' object.pk %}">{{ object.titulo|default:'---' }}</a></td>
+                        <td>{{ object.date_add|default:"---" }}</td>
+                        <td>{{ object.get_status_display }}</td>
+                        <td>{{ object.categoria }}</td>
+                        <td>
+                            <a href="#" class="waves-effect waves-light btn view-in-map">
+                                <input type="hidden" value="{{ object.ponto.wkt }}">
+                                <i class="mdi-image-remove-red-eye"></i>
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{% url 'ocorrencia_detail' object.pk %}" class="waves-effect waves-light btn">
+                                <i class="mdi-image-details"></i>
+                            </a>
+                        </td>
+                        <td>
+                            <a href="#modal-delete" class="modal-delete red waves-effect waves-light btn">
+                                <input type="hidden" value="{{ object.pk }}">
+                                <i class="mdi-action-delete"></i>
+                            </a>
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    {% for object in object_list %}
-                        <tr>
-                            <td><a href="{% url 'ocorrencia_crud' object.pk %}">{{ object.titulo|default:'---' }}</a></td>
-                            <td>{{ object.date_add|default:"---" }}</td>
-                            <td>{{ object.get_status_display }}</td>
-                            <td>{{ object.categoria }}</td>
-                            <td>
-                                <a href="#" class="waves-effect waves-light btn view-in-map">
-                                    <input type="hidden" value="{{ object.ponto.wkt }}">
-                                    <i class="mdi-image-remove-red-eye"></i>
-                                </a>
-                            </td>
-                            <td>
-                                <a href="{% url 'ocorrencia_detail' object.pk %}" class="waves-effect waves-light btn view-in-map">
-                                    <i class="mdi-image-details"></i>
-                                </a>
-                            </td>
-                            <td>
-                                <a href="{% url 'ocorrencia_delete' object.pk %}?next={% url 'ocorrencia_list' %}" class="red waves-effect waves-light btn view-in-map">
-                                    <i class="mdi-action-delete"></i>
-                                </a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        <div class="col s6">
-            <div id="map"></div>
-        </div>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
-    
+    <div class="col s6">
+        <div id="map"></div>
+    </div>
+</div>
+<div id="modal-delete" class="modal">
+    <div class="modal-content">
+      <h4>Deletar Ocorrência</h4>
+      <p>Você tem certeza que deseja deletar essa Ocorrência?</p>
+    </div>
+    <div class="modal-footer">
+      <a id="modal-delete-yes" href="#" class="waves-effect waves-green btn-flat modal-action modal-close">Sim</a>
+      <a id="modal-delete-no"href="#" class="waves-effect waves-red btn-flat modal-action modal-close">Não</a>
+    </div>
+  </div>
 {% endblock content %}
-
 {% block extra_js %}
 
-<div id="fb-root"></div>
-<script>(function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) return;
-  js = d.createElement(s); js.id = id;
-  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&appId=1480968308800869&version=v2.0";
-  fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));</script>
-
 <script type="text/javascript">
+    var delete_url = "{% url 'ocorrencia_delete' 0 %}?next={% url 'ocorrencia_list' %}";
     $(document).ready(function(){
+        $('.modal-delete').leanModal();
+        $('.modal-delete').click(function(){delete_url = delete_url.replace('0', $(this).find('input').val());});
+        $('#modal-delete-yes').click(function(){window.location = delete_url;});
+        $('#modal-delete-no').click(function(){delete_url = "{% url 'ocorrencia_delete' 0 %}?next={% url 'ocorrencia_list' %}";});
         init();
         load_cidade_geom();
-
         map.setCenter(new OpenLayers.LonLat(-45.88555, -23.17960).transform(epsg4326, epsg900913));
-
         var pontos_layer = new OpenLayers.Layer.Vector("Pontos");
         map.addLayers([pontos_layer]);
-
         $('.view-in-map').click(function(){
             var self = $(this);
             var geom = self.find('input').val();
@@ -109,8 +111,10 @@
             pontos_layer.removeAllFeatures();
             pontos_layer.addFeatures(geom);
             map.setCenter(geom.geometry.getBounds().getCenterLonLat(), 15);
+            $('.view-in-map').removeClass('blue');
+            self.addClass('blue');
         });
-
+        $('#ocorrencias-table').find('tbody tr').first().find('.view-in-map').click();
     });
 </script>
 
