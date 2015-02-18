@@ -38,7 +38,7 @@
           {% if user.is_anonymous %}
           <li><a href="{% url 'socialauth_begin' 'facebook' %}"><i class="mdi-social-public left"></i> Login com o Facebook</a></li>
           {% else %}
-          <li><a href="#" class="navbar-link"><i class="mdi-action-view-list left"></i>Minhas Ocorrências</a></li>
+          <li><a href="{% url 'ocorrencia_list' %}" class="navbar-link"><i class="mdi-action-view-list left"></i>Minhas Ocorrências</a></li>
           <li><a href="{% url 'logout' %}" class="navbar-link"><i class="mdi-action-exit-to-app left"></i>Sair</a></li>
           {% endif %}
           <li><a class="dropdown-button" href="#" data-activates="drop-more"><i class="mdi-navigation-arrow-drop-down"></i></a></li>
