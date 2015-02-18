@@ -91,3 +91,89 @@ function load_cidade_geom() {
         }
     });
 }
+
+var mapa_cidadao_style = {
+    fillColor: '#F00',
+    fillOpacity: 0.5,
+    strokeWidth: 1,
+    strokeColor: '#000',
+};
+
+function mapa_cidadao_draw_component(geom, container){
+
+    var component_style = '<style type="text/css">' +
+        '#draw-point{' +
+        'position:absolute; ' +
+        'right:80px; ' +
+        'top:70px;' +
+        'z-index:10000; ' +
+        '}' +
+        '#pam{' +
+        'position:absolute; ' +
+        'right:240px; ' +
+        'top:70px; ' +
+        'z-index:10000; ' +
+        '}' +
+        '</style>';
+
+    $('html > head').append(component_style);
+
+    var component_html = '' +
+        '<i id="draw-point" class="mdi-maps-pin-drop" title="Adicionar Novo Ponto"></i>' +
+        '<i id="pam" class="mdi-maps-navigation blue" title="Mover-se pelo Mapa">';
+    
+    $(container).append(component_html);
+
+    var pontos_layer = new OpenLayers.Layer.Vector("Pontos");
+
+    map.addLayers([pontos_layer]);
+
+    if(geom !== ''){
+        geom = wkt.read(geom);
+        geom.style = mapa_cidadao_style;
+        if(geom.geometry.x || geom.geometry.y){
+            geom.style.pointRadius = 4;
+            pontos_layer.addFeatures(geom);
+        }
+    }
+
+    var point_control = new OpenLayers.Control.DrawFeature(
+        pontos_layer,
+        OpenLayers.Handler.Point
+    );
+    map.addControl(point_control);
+
+    function add_new_feature(layer, new_feature){
+        new_feature.style = mapa_cidadao_style;
+        if(new_feature.geometry.x || new_feature.geometry.y){
+            new_feature.style.pointRadius = 4;
+        }
+
+        $('#id_ponto').val(wkt.write(new_feature));
+
+        var features_len = layer.features.length;
+        for(var i=features_len; i--;){
+            var feature = layer.features[i];
+            if(feature.id != new_feature.id){
+                layer.removeFeatures(feature);
+            }
+        }
+    }
+
+    pontos_layer.events.on({
+        'beforefeatureadded': function(event){
+            add_new_feature(pontos_layer, event.feature);
+        }
+    });
+
+    $('#draw-point').click(function (){
+        point_control.activate();
+        $(this).addClass("blue");
+        $('#pam').removeClass("blue");
+    });
+    $('#pam').click(function (){
+        point_control.deactivate();
+        $(this).addClass("blue");
+        $('#draw-point').removeClass("blue");
+    });
+}
