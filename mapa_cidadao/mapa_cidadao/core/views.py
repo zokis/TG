@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.db.models.loading import get_model
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.shortcuts import render_to_response
 from django.views.generic import ListView
@@ -47,23 +47,6 @@ def get_current_geom(request):
 def index(request):
     geom = get_geom_from_cache()
     search_form = SearchForm(request.POST or None, geom=geom)
-    ocorrencias = search_form.get_queryset()
-
-    return render(
-        request,
-        'index.html',
-        {
-            'ocorrencias': ocorrencias,
-            'request': request,
-            'search_form': search_form,
-            'user': request.user,
-        }
-    )
-
-
-def minhas_ocorrencias(request):
-    geom = get_geom_from_cache()
-    search_form = SearchForm(request.POST or None, geom=geom, request_user=request.user)
     ocorrencias = search_form.get_queryset()
 
     return render(
@@ -165,6 +148,7 @@ class OcorrenciaDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(OcorrenciaDetailView, self).get_context_data(**kwargs)
         context['title'] = u'Detalhes'
+        context['FACEBOOK_APP_ID'] = settings.FACEBOOK_APP_ID
         return context
 
 
@@ -182,7 +166,7 @@ class OcorrenciaListView(ListView):
 
     def get_queryset(self):
         queryset = super(OcorrenciaListView, self).get_queryset()
-        queryset = queryset.filter(user=self.request.user).order_by('date_add')
+        queryset = queryset.filter(user=self.request.user).order_by('-date_add')
         return queryset
 
 
