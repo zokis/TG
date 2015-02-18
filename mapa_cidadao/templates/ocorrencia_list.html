@@ -47,37 +47,30 @@
                 <tbody>
                     {% for object in object_list %}
                         <tr>
-                            <td>
-                                {{ object.titulo }}
-                            </td>
+                            <td><a href="{% url 'ocorrencia_crud' object.pk %}">{{ object.titulo|default:'---' }}</a></td>
                             <td>{{ object.date_add|default:"---" }}</td>
                             <td>{{ object.get_status_display }}</td>
                             <td>{{ object.categoria }}</td>
-                            <td>Ver no Mapa</td>
-                            <td>Detalhes</td>
-                            <td>Deletar</td>
+                            <td>
+                                <a href="#" class="waves-effect waves-light btn view-in-map">
+                                    <input type="hidden" value="{{ object.ponto.wkt }}">
+                                    <i class="mdi-image-remove-red-eye"></i>
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{% url 'ocorrencia_detail' object.pk %}" class="waves-effect waves-light btn view-in-map">
+                                    <i class="mdi-image-details"></i>
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{% url 'ocorrencia_delete' object.pk %}?next={% url 'ocorrencia_list' %}" class="red waves-effect waves-light btn view-in-map">
+                                    <i class="mdi-action-delete"></i>
+                                </a>
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
-
-            {% if is_paginated %}
-                <div class="pagination">
-                    <span class="step-links">
-                        {% if page_obj.has_previous %}
-                            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
-                        {% endif %}
-
-                        <span class="current">
-                            Page {{ page_obj.number }} of {{ paginator.num_pages }}.
-                        </span>
-
-                        {% if page_obj.has_next %}
-                            <a href="?page={{ page_obj.next_page_number }}">next</a>
-                        {% endif %}
-                    </span>
-                </div>
-            {% endif %}
         </div>
         <div class="col s6">
             <div id="map"></div>
@@ -103,6 +96,20 @@
         load_cidade_geom();
 
         map.setCenter(new OpenLayers.LonLat(-45.88555, -23.17960).transform(epsg4326, epsg900913));
+
+        var pontos_layer = new OpenLayers.Layer.Vector("Pontos");
+        map.addLayers([pontos_layer]);
+
+        $('.view-in-map').click(function(){
+            var self = $(this);
+            var geom = self.find('input').val();
+            geom = wkt.read(geom);
+            geom.style = mapa_cidadao_style;
+            geom.style.pointRadius = 4;
+            pontos_layer.removeAllFeatures();
+            pontos_layer.addFeatures(geom);
+            map.setCenter(geom.geometry.getBounds().getCenterLonLat(), 15);
+        });
 
     });
 </script>
