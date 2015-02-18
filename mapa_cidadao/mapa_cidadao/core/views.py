@@ -182,7 +182,7 @@ class OcorrenciaListView(ListView):
 
     def get_queryset(self):
         queryset = super(OcorrenciaListView, self).get_queryset()
-        queryset = queryset.filter(user=self.request.user)
+        queryset = queryset.filter(user=self.request.user).order_by('date_add')
         return queryset
 
 
@@ -193,19 +193,17 @@ ocorrencia_list = OcorrenciaListView.as_view()
 def generic_delete_from_model(request, app_model=None, object_id=None):
     _next = request.GET.get('next', 'home')
     app_name, model_name = app_model.split('.', 1)
-    if request.user.has_module_perms(app_name) or request.user.is_superuser:
-        model = get_model(app_name, model_name)
-        obj = get_object_or_404(model, pk=object_id)
-        can_delete = True
+    model = get_model(app_name, model_name)
+    obj = get_object_or_404(model, pk=object_id)
+    can_delete = True
 
-        if hasattr(obj, 'user_can_delete'):
-            if not obj.user_can_delete(request.user):
-                messages.success(request, u"Não foi possível deletar")
-                can_delete = False
+    if hasattr(obj, 'user_can_delete'):
+        if not obj.user_can_delete(request.user):
+            messages.success(request, u"Não foi possível deletar")
+            can_delete = False
 
-        if can_delete:
-            obj.delete()
-            messages.success(request, u"Deletado com sucesso")
+    if can_delete:
+        obj.delete()
+        messages.success(request, u"Deletado com sucesso")
 
-        return redirect(_next)
-    raise Http404
+    return redirect(_next)
