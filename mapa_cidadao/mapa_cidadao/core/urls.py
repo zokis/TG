@@ -13,5 +13,11 @@ urlpatterns = patterns(
     url(r'^ocorrencia/(?P<pk>\d+)/detalhes/$', 'mapa_cidadao.core.views.ocorrencia_detalhes', name='ocorrencia_detail'),
     url(r'^ocorrencia/(?P<pk>\d+)/(?P<op>(votar|vetar))/$', 'mapa_cidadao.core.views.votar', name='votar'),
     url(r'^ocorrencia/(?P<pk>\d+)/spam/$', 'mapa_cidadao.core.views.spam', name='spam'),
+    url(
+        r'^ocorrencia/(?P<object_id>\d+)/delete/$',
+        'mapa_cidadao.core.views.generic_delete_from_model',
+        {'app_model': 'core.Ocorrencia'},
+        name='ocorrencia_delete'
+    ),
     url(r'^ocorrencias/$', 'mapa_cidadao.core.views.ocorrencia_list', name='ocorrencia_list'),
 )
