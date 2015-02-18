@@ -100,7 +100,6 @@ def spam(request, pk):
             messages.success(request, u"Ocorrência Marcada como Spam")
         except:
             messages.error(request, u"Você não pode marcar essa ocorrência como Spam!")
-
     return redirect(reverse('ocorrencia_detail', args=(pk,)))
 
 
@@ -121,7 +120,6 @@ def ocorrencia_crud(request, pk=None):
         if form.is_valid():
             ocorrencia = form.save()
             messages.success(request, u'Ocorrência salva com sucesso!')
-
             return redirect(reverse('ocorrencia_crud', args=(ocorrencia.pk,)))
         else:
             geom = form.cleaned_data.get('ponto', EMPTY_STRING)
@@ -165,9 +163,7 @@ class OcorrenciaListView(ListView):
         return context
 
     def get_queryset(self):
-        queryset = super(OcorrenciaListView, self).get_queryset()
-        queryset = queryset.filter(user=self.request.user).order_by('-date_add')
-        return queryset
+        return super(OcorrenciaListView, self).get_queryset().filter(user=self.request.user).order_by('-date_add')
 
 
 ocorrencia_list = OcorrenciaListView.as_view()
@@ -180,14 +176,11 @@ def generic_delete_from_model(request, app_model=None, object_id=None):
     model = get_model(app_name, model_name)
     obj = get_object_or_404(model, pk=object_id)
     can_delete = True
-
     if hasattr(obj, 'user_can_delete'):
         if not obj.user_can_delete(request.user):
             messages.success(request, u"Não foi possível deletar")
             can_delete = False
-
     if can_delete:
         obj.delete()
         messages.success(request, u"Deletado com sucesso")
-
     return redirect(_next)
