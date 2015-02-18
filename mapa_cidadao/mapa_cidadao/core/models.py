@@ -77,20 +77,20 @@ class Ocorrencia(models.Model):
     def votar(self, user):
         if self.can_votar(user):
             if self.user == user:
-                raise Exception(u'Você não pode votar em uma Ocorrência sua')
+                raise Voto.VotoException(u'Você não pode votar em uma Ocorrência sua')
             else:
                 return Voto.objects.create(ocorrencia=self, user=user)
         else:
-            raise Exception(u'Você não pode votar em uma Ocorrência que você já votou ou vetou')
+            raise Voto.VotoException(u'Você não pode votar em uma Ocorrência que você já votou ou vetou')
 
     def vetar(self, user):
         if self.can_vetar(user):
             if self.user == user:
-                raise Exception(u'Você não pode vetar em uma Ocorrência sua')
+                raise Veto.VetoException(u'Você não pode vetar em uma Ocorrência sua')
             else:
                 return Voto.objects.create(ocorrencia=self, user=user)
         else:
-            raise Exception(u'Você não pode vetar em uma Ocorrência que você já vetou ou votou')
+            raise Veto.VetoException(u'Você não pode vetar em uma Ocorrência que você já vetou ou votou')
 
     def get_votos(self):
         return Voto.objects.filter(ocorrencia=self).count()
@@ -102,12 +102,9 @@ class Ocorrencia(models.Model):
         self.ponto = ponto
 
     def save(self, *args, **kwargs):
-        if not self.poligono and not self.ponto:
+        if not self.ponto:
             raise IntegrityError(u'Cadastre um ponto ou um poligono')
-        elif self.poligono and self.ponto:
-            raise IntegrityError(u'Cadastre apenas um ponto ou um poligono')
-        else:
-            return super(Ocorrencia, self).save(*args, **kwargs)
+        return super(Ocorrencia, self).save(*args, **kwargs)
 
     objects = models.GeoManager()
 
@@ -131,6 +128,9 @@ class Voto(models.Model):
     user = models.ForeignKey(User)
     date_add = models.DateTimeField(auto_now_add=True)
 
+    class VotoException(Exception):
+        pass
+
     @classmethod
     def can_votar(cls, user, ocorrencia):
         if user.is_anonymous():
@@ -147,6 +147,9 @@ class Veto(models.Model):
     ocorrencia = models.ForeignKey(Ocorrencia)
     user = models.ForeignKey(User)
     date_add = models.DateTimeField(auto_now_add=True)
+
+    class VetoException(Exception):
+        pass
 
     @classmethod
     def can_vetar(cls, user, ocorrencia):
