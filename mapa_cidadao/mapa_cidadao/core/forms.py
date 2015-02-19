@@ -21,7 +21,7 @@ class SearchForm(forms.Form):
     def get_queryset(self):
         ocorrencias = Ocorrencia.objects.filter(ponto__intersects=self.geom)
         if self.request_user:
-            ocorrencias = ocorrencias.filter(user=request_user)
+            ocorrencias = ocorrencias.filter(user=self.request_user)
         if self.is_valid():
             categoria = self.cleaned_data.get('categoria', False)
             if categoria:
