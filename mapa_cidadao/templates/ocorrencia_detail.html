@@ -36,12 +36,25 @@
                 <div class="col s2">
                     <div class="fb-like" data-href="http://localhost:8000/ocorrencia/{{ object.pk }}/detalhes/" data-layout="button" data-action="like" data-show-faces="true" data-share="true"></div>
                 </div>
-                <div class="col s1">
+                <div class="col s10">
                 {% if user.pk == object.user.pk %}
                     <a href="{% url 'ocorrencia_crud' object.pk %}" class="waves-effect waves-light btn rigth">
                         Editar
                         <i class="mdi-content-send right"></i>
                     </a>
+                    {% if object.status == 1 %}
+                        <a href="{% url 'change_status' object.pk 2 %}" class="blue waves-effect waves-light btn rigth">
+                            Resolvida
+                            <i class="mdi-navigation-check right"></i>
+                        </a>
+                    {% else %}
+                        {% if object.status == 2 %}
+                            <a href="{% url 'change_status' object.pk 3 %}" class="blue waves-effect waves-light btn rigth">
+                                Reabrir
+                                <i class="mdi-action-autorenew right"></i>
+                            </a>
+                        {% endif %}
+                    {% endif %}
                 {% else %}
                     {% if not user.is_anonymous %}
                         {% if object|can_votar:user or object|can_vetar:user %}
