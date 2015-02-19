@@ -1,1 +1,112 @@
-[{"pk": 3, "model": "core.categoria", "fields": {"marker": "markers/categoria_None.png", "estilo": null, "descricao": "Buraco na rua", "nome": "Buraco na rua"}}, {"pk": 4, "model": "core.categoria", "fields": {"marker": "", "estilo": null, "descricao": "Vazio", "nome": "Categoria Vazio"}}, {"pk": 5, "model": "core.categoria", "fields": {"marker": "markers/categoria_None_1.png", "estilo": "{\"strokeWidth\":1,\"graphicHeight\":32,\"graphicWidth\":32,\"fillColor\":\"#0F0\",\"strokeColor\":\"#00F\",\"fillOpacity\":0.5}", "descricao": "CATEGORIA TESTE", "nome": "CATEGORIA TESTE"}}]
+[
+{
+    "fields": {
+        "marker": "markers/categoria_None.png",
+        "estilo": null,
+        "descricao": "Buraco na rua",
+        "nome": "Buraco na rua"
+    },
+    "model": "core.categoria",
+    "pk": 3
+},
+{
+    "fields": {
+        "marker": "",
+        "estilo": null,
+        "descricao": "Vazio",
+        "nome": "Ilumina\u00e7\u00e3o P\u00fablica"
+    },
+    "model": "core.categoria",
+    "pk": 4
+},
+{
+    "fields": {
+        "marker": "markers/categoria_None_1.png",
+        "estilo": "{\"strokeWidth\":1,\"graphicHeight\":32,\"graphicWidth\":32,\"fillColor\":\"#0F0\",\"strokeColor\":\"#00F\",\"fillOpacity\":0.5}",
+        "descricao": "CATEGORIA TESTE",
+        "nome": "Enchentes"
+    },
+    "model": "core.categoria",
+    "pk": 5
+},
+{
+    "fields": {
+        "marker": "",
+        "estilo": null,
+        "descricao": "Assalto",
+        "nome": "Assaltos"
+    },
+    "model": "core.categoria",
+    "pk": 7
+},
+{
+    "fields": {
+        "marker": "",
+        "estilo": null,
+        "descricao": "Tr\u00e1fico de Drogas",
+        "nome": "Tr\u00e1fico de Drogas"
+    },
+    "model": "core.categoria",
+    "pk": 8
+},
+{
+    "fields": {
+        "marker": "",
+        "estilo": null,
+        "descricao": "Sinaliza\u00e7\u00e3o",
+        "nome": "Sinaliza\u00e7\u00e3o"
+    },
+    "model": "core.categoria",
+    "pk": 11
+},
+{
+    "fields": {
+        "marker": "",
+        "estilo": null,
+        "descricao": "Falta de \u00c1gua",
+        "nome": "Falta de \u00c1gua"
+    },
+    "model": "core.categoria",
+    "pk": 12
+},
+{
+    "fields": {
+        "marker": "",
+        "estilo": null,
+        "descricao": "Acessibilidade",
+        "nome": "Acessibilidade"
+    },
+    "model": "core.categoria",
+    "pk": 14
+},
+{
+    "fields": {
+        "marker": "",
+        "estilo": null,
+        "descricao": "Transporte P\u00fablico",
+        "nome": "Transporte P\u00fablico"
+    },
+    "model": "core.categoria",
+    "pk": 15
+},
+{
+    "fields": {
+        "marker": "",
+        "estilo": null,
+        "descricao": "Sa\u00fade",
+        "nome": "Sa\u00fade"
+    },
+    "model": "core.categoria",
+    "pk": 666
+},
+{
+    "fields": {
+        "marker": "",
+        "estilo": null,
+        "descricao": "Outros",
+        "nome": "Outros"
+    },
+    "model": "core.categoria",
+    "pk": 999
+}
+]
