@@ -34,7 +34,7 @@
           {% if search_form %}
           <li><a href="#" id="toggle-search"><i class="mdi-action-search left"></i>Busca</a></li>
           {% endif %}
-          <li><a href="#"><i class="mdi-action-trending-up left"></i>Estatísticas</a></li>
+          <li><a href="{% url 'estatisticas' %}"><i class="mdi-action-trending-up left"></i>Estatísticas</a></li>
           {% if user.is_anonymous %}
           <li><a href="{% url 'socialauth_begin' 'facebook' %}"><i class="mdi-social-public left"></i> Login com o Facebook</a></li>
           {% else %}
