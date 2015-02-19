@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block content %}
+
+
+<table>
+    <caption>Ocorrências por categoria</caption>
+    <thead>
+        <tr>
+            <th>Categoria</th>
+            <th>Ocorrências</th>
+            <th>Ocorrências %</th>
+        </tr>
+    </thead>
+    <tbody>
+{% for cat, oco, oco_100 in ocos_cats %}
+        <tr>
+            <td>{{ cat }}</td>
+            <td>{{ oco }}</td>
+            <td>{{ oco_100 }}%</td>
+        </tr>
+{% endfor %}
+    </tbody>
+</table>
+
+<table>
+    <tr>
+        <th>Usuáios Ativos no Sistema</th>
+        <td>{{ users }}</td>
+    </tr>
+    <tr>
+        <th>Total últimos 7 dias</th>
+        <td>{{ oco_7_dias }}</td>
+    </tr>
+    <tr>
+        <th>Total Abertas</th>
+        <td>{{ oco_abertas }}</td>
+    </tr>
+    <tr>
+        <th>Total Abertas %</th>
+        <td>{{ oco_abertas_100 }}%</td>
+    </tr>
+    <tr>
+        <th>Total Inapropriadas</th>
+        <td>{{ oco_inapropriadas }}</td>
+    </tr>
+    <tr>
+        <th>Total Inapropriadas %</th>
+        <td>{{ oco_inapropriadas_100 }}%</td>
+    </tr>
+    <tr>
+        <th>Total Reabertas</th>
+        <td>{{ oco_reabertas }}</td>
+    </tr>
+    <tr>
+        <th>Total Reabertas %</th>
+        <td>{{ oco_reabertas_100 }}%</td>
+    </tr>
+    <tr>
+        <th>Total Resolvidas</th>
+        <td>{{ oco_resolvidas }}</td>
+    </tr>
+    <tr>
+        <th>Total Resolvidas %</th>
+        <td>{{ oco_resolvidas_100 }}%</td>
+    </tr>
+    <tr>
+        <th>Total Spam</th>
+        <td>{{ oco_spam }}</td>
+    </tr>
+    <tr>
+        <th>Total Spam %</th>
+      <td>{{ oco_spam_100 }}%</td>
+    </tr>
+    <tr>
+        <th>Total</th>
+        <td>{{ oco_total }}</td>
+    </tr>
+</table>
+
+{% endblock content %}
