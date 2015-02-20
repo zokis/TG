@@ -22,4 +22,5 @@ urlpatterns = patterns(
     ),
     url(r'^ocorrencias/$', 'mapa_cidadao.core.views.ocorrencia_list', name='ocorrencia_list'),
     url(r'^estatisticas/$', 'mapa_cidadao.core.views.estatisticas', name='estatisticas'),
+    url(r'^ocorrencias/json/$', 'mapa_cidadao.core.views.load_ocorrencias', name='load_ocorrencias'),
 )
