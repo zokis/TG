@@ -3,7 +3,14 @@ import json
 
 from os.path import join
 from unicodedata import normalize
+from django.conf import settings
+from django.core.cache import cache
 from django.core.serializers.json import DjangoJSONEncoder
+
+from municipios.models import Municipio
+
+MUNICIPIO_ID = getattr(settings, 'MUNICIPIO_ID', 3549904)
+MUNICIPIO = Municipio.objects.get(id_ibge=MUNICIPIO_ID)
 
 
 def get_upload_path_docs(instance, filename):
@@ -51,3 +58,13 @@ def is_last(objects):
                 yield last, False
                 last = val
             yield last, True
+
+
+def get_geom_from_cache():
+    geom = cache.get("geom_%s" % MUNICIPIO_ID)
+    if geom is None:
+        geom = MUNICIPIO.geom
+        geom.transform(900913)
+
+        cache.set("geom_%s" % MUNICIPIO_ID, geom, 30*24*60*60)  # 1 mês
+    return geom

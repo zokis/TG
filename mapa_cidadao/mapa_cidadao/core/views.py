@@ -6,7 +6,6 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.db.models.loading import get_model
 from django.http import HttpResponse, Http404
@@ -19,39 +18,26 @@ from django.views.decorators.http import condition
 from django.views.generic import ListView, TemplateView, View
 from django.views.generic.detail import DetailView
 
-from municipios.models import Municipio
-
 from mapa_cidadao.core.forms import OcorrenciaForm, ContatoForm, SearchForm
 from mapa_cidadao.core.models import Categoria, Ocorrencia, Spam
 
-from mapa_cidadao.core.utils import is_last
+from mapa_cidadao.core.utils import is_last, get_geom_from_cache
 
-
-MUNICIPIO_ID = getattr(settings, 'MUNICIPIO_ID', 3549904)
-
-MUNICIPIO = Municipio.objects.get(id_ibge=MUNICIPIO_ID)
-ESTADO = MUNICIPIO.uf
-END_GEOCODE_STR = u'%s - %s, Brasil' % (MUNICIPIO.nome, ESTADO.nome)
 
 EMPTY_STRING = ''
 
 
-def get_geom_from_cache():
-    geom = cache.get("geom_%s" % MUNICIPIO_ID)
-    if geom is None:
-        geom = MUNICIPIO.geom
-        geom.transform(900913)
+class GetCurrentGeomView(View):
+    def get(self, request):
+        return HttpResponse(
+            get_geom_from_cache().json,
+            content_type="application/json"
+        )
 
-        cache.set("geom_%s" % MUNICIPIO_ID, geom, 30*24*60*60)  # 1 mês
-    return geom
+    def post(self, request):
+        return self.get(request)
 
-
-def get_current_geom(request):
-    geom = get_geom_from_cache()
-    return HttpResponse(
-        geom.json,
-        content_type="application/json"
-    )
+get_current_geom = GetCurrentGeomView.as_view()
 
 
 @condition(etag_func=None)
@@ -250,7 +236,6 @@ class OcorrenciaDetailView(DetailView):
         context['FACEBOOK_APP_ID'] = settings.FACEBOOK_APP_ID
         return context
 
-
 ocorrencia_detalhes = OcorrenciaDetailView.as_view()
 
 
@@ -265,7 +250,6 @@ class OcorrenciaListView(ListView):
 
     def get_queryset(self):
         return super(OcorrenciaListView, self).get_queryset().filter(user=self.request.user).order_by('-date_add')
-
 
 ocorrencia_list = OcorrenciaListView.as_view()
 
