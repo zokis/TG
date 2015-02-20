@@ -93,31 +93,24 @@
     };
     function load_ocorrencias() {
         var ocorrencia_layer = new OpenLayers.Layer.Vector("Ocorrências");
-        var ocorrencias_wkt = [
-            {% for ocorrencia in ocorrencias %}
-            {
-                'wkt': '{{ ocorrencia.ponto.wkt|safe }}',
-                'name': '{{ ocorrencia.titulo }}',
-                'description': '{{ ocorrencia.descricao|wordwrap:10|escapejs }}',
-                'pk': '{{ ocorrencia.pk }}',
-                'style': {{ ocorrencia.get_estilo|safe }},
-            },
-            {% endfor %}
-        ];
         var ocorrencias_features = [];
-        var ocorrencias_wkt_len = ocorrencias_wkt.length;
-        for (var i = ocorrencias_wkt_len; i--;) {
-            var feature = wkt.read(ocorrencias_wkt[i].wkt);
-            feature.attributes.name = ocorrencias_wkt[i].name;
-            feature.attributes.pk = ocorrencias_wkt[i].pk;
-            feature.attributes.description = ocorrencias_wkt[i].description;
-            feature.style = ocorrencias_wkt[i].style;
-            ocorrencias_features.push(feature);
-        }
-        ocorrencia_layer.addFeatures(ocorrencias_features);
-        ocorrencia_layer.events.register('featureclick', ocorrencia_layer, feature_click);
-        ocorrencia_layer.events.register('nofeatureclick', ocorrencia_layer, popup_clear);
-        map.addLayer(ocorrencia_layer);
+        $.getJSON(
+            "{% url 'load_ocorrencias' %}", {{ POST }}
+        ).done(function(data) {
+            $.each(data, function(i, item){
+                var feature = wkt.read(item.wkt);
+                feature.attributes.name = item.name;
+                feature.attributes.pk = item.pk;
+                feature.attributes.description = item.description;
+                feature.style = item.style;
+                ocorrencias_features.push(feature);
+
+                ocorrencia_layer.addFeatures(ocorrencias_features);
+                ocorrencia_layer.events.register('featureclick', ocorrencia_layer, feature_click);
+                ocorrencia_layer.events.register('nofeatureclick', ocorrencia_layer, popup_clear);
+                map.addLayer(ocorrencia_layer);
+            });
+        });
     }
     $(document).ready(function(){
       init();
