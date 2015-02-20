@@ -42,3 +42,12 @@ class JSONSerializer(object):
 
     def loads(self, data):
         return json.loads(data.decode('latin-1'))
+
+
+def is_last(objects):
+            it = iter(objects)
+            last = it.next()
+            for val in it:
+                yield last, False
+                last = val
+            yield last, True
