@@ -1,5 +1,6 @@
 # coding: utf-8
 from datetime import timedelta
+from json import dumps
 
 from django.conf import settings
 from django.contrib import messages
@@ -11,15 +12,19 @@ from django.db.models.loading import get_model
 from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.shortcuts import render_to_response
+from django.template import defaultfilters as filters
 from django.utils import timezone
 from django.views.decorators.cache import cache_page
-from django.views.generic import ListView
+from django.views.decorators.http import condition
+from django.views.generic import ListView, TemplateView, View
 from django.views.generic.detail import DetailView
 
 from municipios.models import Municipio
 
 from mapa_cidadao.core.forms import OcorrenciaForm, ContatoForm, SearchForm
 from mapa_cidadao.core.models import Categoria, Ocorrencia, Spam
+
+from mapa_cidadao.core.utils import is_last
 
 
 MUNICIPIO_ID = getattr(settings, 'MUNICIPIO_ID', 3549904)
@@ -49,53 +54,69 @@ def get_current_geom(request):
     )
 
 
-def index(request):
+@condition(etag_func=None)
+def load_ocorrencias(request):
     geom = get_geom_from_cache()
-    search_form = SearchForm(request.POST or None, geom=geom)
+    search_form = SearchForm(request.GET or None, geom=geom)
     ocorrencias = search_form.get_queryset()
 
-    return render(
-        request,
-        'index.html',
-        {
-            'ocorrencias': ocorrencias,
-            'request': request,
-            'search_form': search_form,
-            'user': request.user,
-        }
-    )
+    def flush():
+        yield '['
+        for ocorrencia, last in is_last(ocorrencias):
+            yield dumps({
+                'wkt': filters.safe(ocorrencia.ponto.wkt),
+                'name': ocorrencia.titulo,
+                'description': filters.escapejs(filters.wordwrap(ocorrencia.descricao, 10)),
+                'pk': ocorrencia.pk,
+                'style': (ocorrencia.get_estilo())
+            })
+            if not last:
+                yield ','
+        yield ']'
+    return HttpResponse(flush(), content_type='application/json')
 
 
-@cache_page(60 * 25)
-def estatisticas(request):
+class IndexView(TemplateView):
+    template_name = 'index.html'
 
-    sete_dias = timezone.now().date() - timedelta(days=7)
+    def get_context_data(self, **kwargs):
+        context = super(IndexView, self).get_context_data(**kwargs)
+        context['POST'] = filters.safe(dumps(self.request.POST))
+        context['search_form'] = SearchForm(self.request.POST or None, geom=None)
+        context['request'] = self.request
+        context['user'] = self.request.user
+        return context
 
-    users = User.objects.filter(is_staff=False, is_active=True).count()
-    oco_total = Ocorrencia.objects.all().count()
-    ocos_cats = []
+index = IndexView.as_view()
 
-    for cat in Categoria.objects.all():
-        oco = Ocorrencia.objects.filter(categoria=cat).count()
-        ocos_cats.append((cat.nome, oco, (oco * 100.0) / oco_total))
 
-    oco_7_dias = Ocorrencia.objects.filter(date_add__gte=sete_dias).count()
-    oco_abertas = Ocorrencia.objects.filter(status=1).count()
-    oco_resolvidas = Ocorrencia.objects.filter(status=2).count()
-    oco_reabertas = Ocorrencia.objects.filter(status=3).count()
-    oco_inapropriadas = Ocorrencia.objects.filter(status=4).count()
-    oco_spam = Ocorrencia.objects.filter(status=5).count()
+class EstatisticasView(TemplateView):
+    template_name = 'estatisticas.html'
 
-    oco_abertas_100 = (oco_abertas * 100.0) / oco_total
-    oco_resolvidas_100 = (oco_resolvidas * 100.0) / oco_total
-    oco_reabertas_100 = (oco_reabertas * 100.0) / oco_total
-    oco_inapropriadas_100 = (oco_inapropriadas * 100.0) / oco_total
-    oco_spam_100 = (oco_spam * 100.0) / oco_total
+    def get_context_data(self, **kwargs):
+        context = super(EstatisticasView, self).get_context_data(**kwargs)
+        users = User.objects.filter(is_staff=False, is_active=True).count()
+        oco_total = Ocorrencia.objects.all().count()
+        ocos_cats = []
 
-    return render(
-        request,
-        'estatisticas.html',
-        {
+        for cat in Categoria.objects.all():
+            oco = Ocorrencia.objects.filter(categoria=cat).count()
+            ocos_cats.append((cat.nome, oco, (oco * 100.0) / oco_total))
+
+        oco_7_dias = Ocorrencia.objects.filter(date_add__gte=timezone.now().date() - timedelta(days=7)).count()
+        oco_abertas = Ocorrencia.objects.filter(status=1).count()
+        oco_resolvidas = Ocorrencia.objects.filter(status=2).count()
+        oco_reabertas = Ocorrencia.objects.filter(status=3).count()
+        oco_inapropriadas = Ocorrencia.objects.filter(status=4).count()
+        oco_spam = Ocorrencia.objects.filter(status=5).count()
+
+        oco_abertas_100 = (oco_abertas * 100.0) / oco_total
+        oco_resolvidas_100 = (oco_resolvidas * 100.0) / oco_total
+        oco_reabertas_100 = (oco_reabertas * 100.0) / oco_total
+        oco_inapropriadas_100 = (oco_inapropriadas * 100.0) / oco_total
+        oco_spam_100 = (oco_spam * 100.0) / oco_total
+
+        context.update({
             'oco_7_dias': oco_7_dias,
             'oco_abertas': oco_abertas,
             'oco_abertas_100': oco_abertas_100,
@@ -110,8 +131,10 @@ def estatisticas(request):
             'oco_total': oco_total,
             'ocos_cats': ocos_cats,
             'users': users,
-        }
-    )
+        })
+        return context
+
+estatisticas = cache_page(60 * 25)(EstatisticasView.as_view())
 
 
 def contact(request):
@@ -126,12 +149,19 @@ def contact(request):
     )
 
 
-def about(request):
-    return render_to_response('about.html', {'title': u'Sobre'})
+class AboutView(TemplateView):
+    template = 'about.html'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(AboutView, self).get_context_data(**kwargs)
+        context['title'] = u'Sobre'
+        return context
+
+about = AboutView.as_view()
 
 
-def votar(request, pk, op='voto'):
-    if request.method == "POST":
+class VotoView(View):
+    def post(self, request, pk, op='voto'):
         ocorrencia = get_object_or_404(Ocorrencia, pk=pk)
         try:
             if op == 'voto':
@@ -141,21 +171,27 @@ def votar(request, pk, op='voto'):
             messages.success(request, u"Voto computado")
         except Exception as e:
             messages.error(request, unicode(e))
-    return redirect(reverse('ocorrencia_detail', args=(pk,)))
+
+        return redirect(reverse('ocorrencia_detail', args=(pk,)))
+
+votar = VotoView.as_view()
 
 
-def change_status(request, pk, status):
-    ocorrencia = get_object_or_404(Ocorrencia, pk=pk)
-    if request.user.pk != ocorrencia.user.pk:
-        raise Http404
-    ocorrencia.status = int(status)
-    ocorrencia.save()
+class ChangeStatusView(View):
+    def get(self, request, pk, status):
+        ocorrencia = get_object_or_404(Ocorrencia, pk=pk)
+        if request.user.pk != ocorrencia.user.pk:
+            raise Http404
+        ocorrencia.status = int(status)
+        ocorrencia.save()
 
-    return redirect(reverse('ocorrencia_detail', args=(pk,)))
+        return redirect(reverse('ocorrencia_detail', args=(pk,)))
+
+change_status = ChangeStatusView.as_view()
 
 
-def spam(request, pk):
-    if request.method == "POST":
+class SpamView(View):
+    def post(self, request, pk):
         ocorrencia = get_object_or_404(Ocorrencia, pk=pk)
         try:
             ocorrencia.vetar(request.user)
@@ -163,7 +199,9 @@ def spam(request, pk):
             messages.success(request, u"Ocorrência Marcada como Spam")
         except:
             messages.error(request, u"Você não pode marcar essa ocorrência como Spam!")
-    return redirect(reverse('ocorrencia_detail', args=(pk,)))
+        return redirect(reverse('ocorrencia_detail', args=(pk,)))
+
+spam = SpamView.as_view()
 
 
 @login_required
