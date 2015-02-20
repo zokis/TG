@@ -1,7 +1,7 @@
 # coding: utf-8
 from os.path import join
 
-from json import dumps
+from json import dumps, loads
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -25,12 +25,18 @@ class Categoria(models.Model):
 
     def get_estilo(self):
         if self.estilo:
-            estilo = self.estilo
+            estilo = loads(self.estilo)
         else:
             estilo = self.ESTILO.copy()
             if self.marker:
                 estilo['externalGraphic'] = self.marker.url
         return estilo
+
+    def get_estilo_json(self):
+        if self.estilo:
+            return self.estilo
+        else:
+            return dumps(self.get_estilo())
 
     def __unicode__(self):
         return u'%s' % (self.nome)
@@ -39,8 +45,8 @@ class Categoria(models.Model):
 class Ocorrencia(models.Model):
     STATUS_CHOICES = (
         (1, u'Aberto'),
-        (2, u'Resolvido'),
-        (3, u'Reaberto'),
+        (2, u'Reaberto'),
+        (3, u'Resolvido'),
         (4, u'Inapropriado'),
         (5, u'Spam')
     )
@@ -56,6 +62,9 @@ class Ocorrencia(models.Model):
     def user_can_delete(self, user):
         return user == self.user
 
+    def get_estilo_json(self):
+        return dumps(self.get_estilo())
+
     def get_estilo(self):
         estilo = self.categoria.get_estilo()
         if not estilo:
@@ -66,7 +75,7 @@ class Ocorrencia(models.Model):
                 'strokeColor': '#F00',
                 'pointRadius': 4
             }
-        return dumps(estilo)
+        return estilo
 
     def can_votar(self, user):
         return Voto.can_votar(user, self)
@@ -82,7 +91,7 @@ class Ocorrencia(models.Model):
 
     def vetar(self, user):
         if self.can_vetar(user):
-            return Voto.objects.create(ocorrencia=self, user=user)
+            return Veto.objects.create(ocorrencia=self, user=user)
         else:
             raise Veto.VetoException(u'Você não pode vetar esta Ocorrência')
 
