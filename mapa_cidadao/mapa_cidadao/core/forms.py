@@ -56,7 +56,7 @@ class OcorrenciaForm(forms.ModelForm):
         if not cleaned_data.get('ponto', False):
             raise forms.ValidationError(u'Adicione um ponto')
         try:
-            GEOSGeometry(cleaned_data['ponto'])
+            self.geom = GEOSGeometry(cleaned_data['ponto'])
         except:
             raise forms.ValidationError(u'Geometria Inválida')
         return cleaned_data
@@ -67,9 +67,7 @@ class OcorrenciaForm(forms.ModelForm):
 
         instance = super(OcorrenciaForm, self).save(*args, **kwargs)
 
-        geom = GEOSGeometry(self.cleaned_data['ponto'])
-        
-        instance.set_ponto(geom)
+        instance.set_ponto(self.geom)
         instance.user = self.request_user
 
         if commit:
