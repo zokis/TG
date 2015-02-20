@@ -42,14 +42,14 @@
                         Editar
                         <i class="mdi-content-send right"></i>
                     </a>
-                    {% if object.status == 1 %}
-                        <a href="{% url 'change_status' object.pk 2 %}" class="blue waves-effect waves-light btn rigth">
+                    {% if object.status == 1 or object.status == 2 %}
+                        <a href="{% url 'change_status' object.pk 3 %}" class="blue waves-effect waves-light btn rigth">
                             Resolvida
                             <i class="mdi-navigation-check right"></i>
                         </a>
                     {% else %}
-                        {% if object.status == 2 %}
-                            <a href="{% url 'change_status' object.pk 3 %}" class="blue waves-effect waves-light btn rigth">
+                        {% if object.status == 3 %}
+                            <a href="{% url 'change_status' object.pk 2 %}" class="blue waves-effect waves-light btn rigth">
                                 Reabrir
                                 <i class="mdi-action-autorenew right"></i>
                             </a>
@@ -114,6 +114,7 @@
                     {% if object|can_votar:user %}
                         <div class="col s2">
                             <form method="POST" action="{% url 'votar' object.pk 'votar' %}">
+                                {% csrf_token %}
                                 <button class="waves-effect waves-light btn" type="submit" title="Votar">
                                     <i class="mdi-action-thumb-up"></i>
                                 </button>
@@ -124,6 +125,7 @@
                     {% if object|can_vetar:user %}
                         <div class="col s10">
                             <form method="POST" action="{% url 'votar' object.pk 'vetar' %}">
+                                {% csrf_token %}
                                 <button class="waves-effect waves-light btn" type="submit" title="Vetar">
                                     <i class="mdi-action-thumb-down"></i>
                                 </button>
