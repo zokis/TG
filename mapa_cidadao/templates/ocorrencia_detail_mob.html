@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load votacao %}
+
+{% block extra_css %}
+    <style type="text/css">
+        #map{
+            position: relative;
+            top: auto;
+            left: auto;
+            width: 100%;
+            height: 500px;
+
+            -webkit-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+            -moz-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+            box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+            border: 1px #2196F3 inset;
+        }
+    </style>
+{% endblock extra_css %}
+
+{% block content %}
+    <div class="row">
+        <div class="col s12">
+            <center>
+                <h4>
+                    Ocorrência: {{ object.titulo }}
+                </h4>
+            </center>
+            <hr>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s12">
+            <div id="map"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s12">
+            <div class="row">
+                <div class="col s2">
+                    <div class="fb-like" data-href="{{ request.build_absolute_uri }}" data-layout="button" data-action="like" data-show-faces="true" data-share="true"></div>
+                </div>
+                <div class="col s10">
+                {% if user.pk == object.user.pk %}
+                    <a href="{% url 'ocorrencia_crud' object.pk %}" title="Editar Ocorrência" class="waves-effect waves-light btn rigth">
+                        Editar
+                        <i class="mdi-content-send right"></i>
+                    </a>
+                    {% if object.status == 1 or object.status == 2 %}
+                        <a href="{% url 'change_status' object.pk 3 %}" title="Alterar Status para Resolvida" class="blue waves-effect waves-light btn rigth">
+                            Resolvida
+                            <i class="mdi-navigation-check right"></i>
+                        </a>
+                    {% else %}
+                        {% if object.status == 3 %}
+                            <a href="{% url 'change_status' object.pk 2 %}" title="Alterar Status para Reaberta"  class="blue waves-effect waves-light btn rigth">
+                                Reabrir
+                                <i class="mdi-action-autorenew right"></i>
+                            </a>
+                        {% endif %}
+                    {% endif %}
+                {% else %}
+                    {% if not user.is_anonymous %}
+                        {% if object|can_votar:user or object|can_vetar:user %}
+                            <form method="POST" action="{% url 'spam' object.pk %}">
+                                {% csrf_token %}
+                                <button type="submit" class="waves-effect waves-light btn red rigth">SPAM</button>
+                            </form>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s3">
+                    <b>Categoria:</b>
+                </div>
+                <div class="col s9">
+                    {{ object.categoria }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s3">
+                    <b>Status:</b>
+                </div>
+                <div class="col s9">
+                    {{ object.get_status_display }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s3">
+                    <b>Autor:</b>
+                </div>
+                <div class="col s9">
+                    <a target="_blank" href="https://facebook.com/{{ object.user }}/">{{ object.user }}</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s3">
+                    <b>Descrição:</b>
+                </div>
+                <div class="col s9">
+                    {{ object.descricao|linebreaksbr }}
+                </div>
+            </div>
+            <div class="row">
+                Votos <span id="percent-votos"></span>:
+                <div class="progress blue lighten-5" id="bar-votos">
+                    <div class="determinate blue" style="width: 50%"></div>
+                </div>
+                Vetos <span id="percent-vetos"></span>:
+                <div class="progress red lighten-5" id="bar-vetos">
+                    <div class="determinate red" style="width: 50%"></div>
+                </div>
+            </div>
+            <div class="row">
+                {% if not user.is_anonymous %}
+                    {% if object|can_votar:user %}
+                        <div class="col s2">
+                            <form method="POST" action="{% url 'votar' object.pk 'votar' %}">
+                                {% csrf_token %}
+                                <button class="waves-effect waves-light btn" type="submit" title="Votar">
+                                    <i class="mdi-action-thumb-up"></i>
+                                </button>
+                            </form>
+                        </div>
+                    {% endif %}
+
+                    {% if object|can_vetar:user %}
+                        <div class="col s10">
+                            <form method="POST" action="{% url 'votar' object.pk 'vetar' %}">
+                                {% csrf_token %}
+                                <button class="waves-effect waves-light btn" type="submit" title="Vetar">
+                                    <i class="mdi-action-thumb-down"></i>
+                                </button>
+                            </form>
+                        </div>
+                    {% endif %}
+                {% endif %}
+            </div>
+            <div class="row">
+                <div class="fb-comments" data-href="{{ request.build_absolute_uri }}" data-numposts="5" data-width="100%" data-colorscheme="light"></div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+{% block extra_js %}
+
+<div id="fb-root"></div>
+
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&appId={{ FACEBOOK_APP_ID }}&version=v2.0";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+<script type="text/javascript">
+    var geom = '{{ object.ponto.wkt }}';
+    $(document).ready(function(){
+        init();
+        load_cidade_geom();
+
+        geom = wkt.read(geom);
+        map.setCenter(geom.geometry.getBounds().getCenterLonLat(), 15);
+
+        var votos = {{ object.get_votos }};
+        var vetos = {{ object.get_vetos }};
+        var votos_total = votos + vetos;
+
+        var votos_percent = (votos * 100 / votos_total);
+        var vetos_percent = (100 - votos_percent);
+        if(isNaN(votos_percent))
+            votos_percent = 0;
+        if(isNaN(vetos_percent))
+            vetos_percent = 0;
+        votos_percent = votos_percent + '%';
+        vetos_percent = vetos_percent + '%';
+
+        $('#bar-votos .determinate').css('width', votos_percent);
+        $('#bar-vetos .determinate').css('width', vetos_percent);
+
+        $('#percent-votos').html('' + votos + ' - ' + votos_percent);
+        $('#percent-vetos').html('' + vetos + ' - ' + vetos_percent);
+
+        var pontos_layer = new OpenLayers.Layer.Vector("Pontos");
+        map.addLayers([pontos_layer]);
+        geom.style = mapa_cidadao_style;
+        geom.style.pointRadius = 4;
+        pontos_layer.addFeatures(geom);
+    });
+</script>
+
+{% endblock extra_js %}

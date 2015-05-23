@@ -18,6 +18,8 @@ from django.views.decorators.http import condition
 from django.views.generic import ListView, TemplateView, View
 from django.views.generic.detail import DetailView
 
+from django_user_agents.utils import get_user_agent
+
 from mapa_cidadao.core.forms import OcorrenciaForm, ContatoForm, SearchForm
 from mapa_cidadao.core.models import Categoria, Ocorrencia, Spam
 
@@ -235,6 +237,12 @@ class OcorrenciaDetailView(DetailView):
         context['title'] = u'Detalhes'
         context['FACEBOOK_APP_ID'] = settings.FACEBOOK_APP_ID
         return context
+
+    def get_template_names(self):
+        user_agent = get_user_agent(self.request)
+        if user_agent.is_mobile:
+            return ['ocorrencia_detail_mob.html']
+        return [self.template_name]
 
 ocorrencia_detalhes = OcorrenciaDetailView.as_view()
 
