@@ -67,6 +67,9 @@ def load_ocorrencias(request):
 class IndexView(TemplateView):
     template_name = 'index.html'
 
+    def post(self, request, *args, **kwargs):
+        return self.get(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
         context['POST'] = filters.safe(dumps(self.request.POST))
