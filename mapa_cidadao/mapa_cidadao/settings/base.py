@@ -164,6 +164,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'django_user_agents.middleware.UserAgentMiddleware',
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 # ######### END MIDDLEWARE CONFIGURATION
@@ -201,6 +202,7 @@ THIRD_PARTY_APPS = (
     'social_auth',
     'municipios',
     'materialize_forms',
+    'django_user_agents'
     # 'django_extensions',
 )
 

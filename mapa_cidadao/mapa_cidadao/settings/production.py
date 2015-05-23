@@ -11,19 +11,19 @@ get_config_or = gen_get_config_or(config)
 SECRET_KEY = get_config_or('APP', 'secret_key', SECRET_KEY)
 
 DJANGO_HOME = os.path.join('/opt', 'django')
-STATIC_DIR = os.path.join(DJANGO_HOME, 'static_files', 'mapa_cidadao')
+STATIC_DIR = os.path.join(DJANGO_HOME, 'static_files', 'tncuc')
 MEDIA_ROOT = os.path.join(STATIC_DIR, 'media')
 STATIC_ROOT = os.path.join(STATIC_DIR, 'static')
 
-DATABASE_NAME = get_config_or('DATABASE', 'NAME', default='')
-DATABASE_USER = get_config_or('DATABASE', 'USER', default='')
+DATABASE_NAME = get_config_or('DATABASE', 'NAME', default='tncuc')
+DATABASE_USER = get_config_or('DATABASE', 'USER', default='tncuc')
 DATABASE_PASS = get_config_or('DATABASE', 'PASSWORD', default='')
 DATABASE_HOST = get_config_or('DATABASE', 'HOST', default='localhost')
 DATABASE_PORT = get_config_or('DATABASE', 'PORT', default='5432')
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': DATABASE_NAME,
         'USER': DATABASE_USER,
         'PASSWORD': DATABASE_PASS,
@@ -31,3 +31,5 @@ DATABASES = {
         'PORT': DATABASE_PORT,
     }
 }
+
+ALLOWED_HOSTS = ['104.131.23.39']
