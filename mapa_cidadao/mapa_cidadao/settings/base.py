@@ -254,12 +254,6 @@ WSGI_APPLICATION = 'wsgi.application'
 # ######### END WSGI CONFIGURATION
 
 
-# ######### DEFINE SOUTH CONFIGURATION
-# See: http://south.readthedocs.org/en/latest/settings.html#south-tests-migrate
-SOUTH_TESTS_MIGRATE = False
-# ######### END SOUTH CONFIG
-
-
 # ######### FACEBOOK LOGIN CONFIGURATION
 LOGIN_REDIRECT_URL = '/'
 
