@@ -2,14 +2,11 @@ from django.contrib import admin
 from django import forms
 from .models import Categoria
 
-from jsonfield.fields import JSONFormField
-
 
 class CategoriaForm(forms.ModelForm):
-    estilo = JSONFormField()
-
     class Meta:
         model = Categoria
+        exclude = ['estilo']
 
 
 class CategoriaAdmin(admin.ModelAdmin):
