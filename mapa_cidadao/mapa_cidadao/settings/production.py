@@ -21,9 +21,13 @@ DATABASE_PASS = get_config_or('DATABASE', 'PASSWORD', default='')
 DATABASE_HOST = get_config_or('DATABASE', 'HOST', default='localhost')
 DATABASE_PORT = get_config_or('DATABASE', 'PORT', default='5432')
 
-
-FACEBOOK_APP_ID = get_config_or('FACEBOOK', 'FACEBOOK_APP_ID', default='')
-FACEBOOK_API_SECRET = get_config_or('FACEBOOK', 'FACEBOOK_API_SECRET', default='')
+TEST = True
+if TEST:
+    FACEBOOK_APP_ID = get_config_or('FACEBOOK_TEST', 'FACEBOOK_APP_ID', default='')
+    FACEBOOK_API_SECRET = get_config_or('FACEBOOK_TEST', 'FACEBOOK_API_SECRET', default='')
+else:
+    FACEBOOK_APP_ID = get_config_or('FACEBOOK', 'FACEBOOK_APP_ID', default='')
+    FACEBOOK_API_SECRET = get_config_or('FACEBOOK', 'FACEBOOK_API_SECRET', default='')
 
 DATABASES = {
     'default': {
