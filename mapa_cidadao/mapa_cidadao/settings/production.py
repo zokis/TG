@@ -33,3 +33,4 @@ DATABASES = {
 }
 
 ALLOWED_HOSTS = ['104.131.23.39']
+DEBUG = True
