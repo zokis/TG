@@ -35,11 +35,16 @@ class Categoria(models.Model):
 
     def get_estilo(self):
         if self.estilo:
-            estilo = loads(self.estilo)
-        else:
+            try:
+                estilo = loads(self.estilo)
+            except TypeError:
+                estilo = None
+
+        if not self.estilo or not estilo:
             estilo = self.ESTILO.copy()
-            if self.marker:
-                estilo['externalGraphic'] = self.marker.url
+
+        if self.marker:
+            estilo['externalGraphic'] = self.marker.url
         return estilo
 
     def get_estilo_json(self):
