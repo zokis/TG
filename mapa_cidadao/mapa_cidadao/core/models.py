@@ -18,7 +18,7 @@ class MarkerRename(object):
         return join('markers', 'categoria_%s.png' % instance.pk)
 
 
-marker_rename = MarkerRename("/avatars")
+marker_rename = MarkerRename()
 
 
 class Categoria(models.Model):
