@@ -54,7 +54,8 @@ def load_ocorrencias(request):
             yield dumps({
                 'wkt': filters.safe(ocorrencia.ponto.wkt),
                 'name': ocorrencia.titulo,
-                'description': filters.escapejs(filters.wordwrap(ocorrencia.descricao, 10)),
+                # filters.escapejs
+                'description': (filters.wordwrap(ocorrencia.descricao, 10)),
                 'pk': ocorrencia.pk,
                 'style': (ocorrencia.get_estilo())
             })
