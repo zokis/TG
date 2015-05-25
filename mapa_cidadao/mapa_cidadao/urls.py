@@ -2,6 +2,7 @@
 from django.conf import settings
 from django.conf.urls import include, patterns, url
 from django.contrib.auth.views import logout
+from django.contrib import admin
 
 urlpatterns = patterns(
     '',
@@ -9,6 +10,8 @@ urlpatterns = patterns(
 
     url(r'', include('social_auth.urls')),
     url(r'^logout/$', logout, {"next_page": "/"}, name="logout"),
+
+    url(r'^admin/', include(admin.site.urls)),
 )
 
 if settings.DEBUG:
