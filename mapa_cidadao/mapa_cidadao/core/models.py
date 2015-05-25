@@ -25,7 +25,7 @@ class Categoria(models.Model):
     ESTILO = {
         'graphicWidth': 32,
         'graphicHeight': 32,
-        'externalGraphic': 'https://cdn2.iconfinder.com/data/icons/snipicons/500/map-marker-32.png',
+        'externalGraphic': 'http://104.131.23.39//media/markers/categoria_None_WjVq7yc.png',
     }
 
     nome = models.CharField('nome', max_length=75)
