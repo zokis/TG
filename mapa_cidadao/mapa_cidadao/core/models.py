@@ -7,8 +7,18 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models
 from django.db import IntegrityError
+from django.utils.deconstruct import deconstructible
 
 from jsonfield import JSONField
+
+
+@deconstructible
+class MarkerRename(object):
+    def __call__(self, instance, filename):
+        return join('markers', 'categoria_%s.png' % instance.pk)
+
+
+marker_rename = MarkerRename("/avatars")
 
 
 class Categoria(models.Model):
@@ -20,7 +30,7 @@ class Categoria(models.Model):
 
     nome = models.CharField('nome', max_length=20)
     descricao = models.CharField(u'Descrição', max_length=200)
-    marker = models.FileField(upload_to=lambda i, f: join('markers', 'categoria_%s.png' % i.pk), blank=True, null=True)
+    marker = models.FileField(upload_to=marker_rename, blank=True, null=True)
     estilo = JSONField(default=dumps(ESTILO), blank=True, null=True)
 
     def get_estilo(self):
