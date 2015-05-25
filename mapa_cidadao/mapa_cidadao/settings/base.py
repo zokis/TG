@@ -1,3 +1,4 @@
+# coding: utf-8
 from .facebook_settings import FACEBOOK_APP_ID, FACEBOOK_API_SECRET
 
 from os.path import abspath, basename, dirname, join, normpath
@@ -278,3 +279,6 @@ MUNICIPIOS_SRID = 900913
 # ######### DEFINE THE NUMBER OF SPAM COMPLAINTS FOR AUTOMATIC DELETION
 SPAM_DELETE = 10
 # ######### END SPAM DELETION
+
+
+MUNICIPIO_ID = 3549904
