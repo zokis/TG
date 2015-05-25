@@ -28,7 +28,7 @@ class Categoria(models.Model):
         'externalGraphic': 'https://cdn2.iconfinder.com/data/icons/snipicons/500/map-marker-32.png',
     }
 
-    nome = models.CharField('nome', max_length=20)
+    nome = models.CharField('nome', max_length=75)
     descricao = models.CharField(u'Descrição', max_length=200)
     marker = models.FileField(upload_to=marker_rename, blank=True, null=True)
     estilo = JSONField(default=dumps(ESTILO), blank=True, null=True)
