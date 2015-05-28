@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load materialize %}
+
+{% block extra_css %}
+<style type="text/css">
+    #map{
+        position: relative;
+        top: auto;
+        left: auto;
+        width: 100%;
+        height: 250px;
+
+        -webkit-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+        -moz-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+        box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+        border: 1px #2196F3 inset;
+    }
+</style>
+{% endblock extra_css %}
+
+{% block content %}
+    <div class="row">
+        <div class="col s12">
+            <center>
+                <h4>
+                    {% if form.instance.pk %}Editar{% else %}Nova{% endif %} Ocorrência
+                </h4>
+            </center>
+            <hr>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s12">
+            <div id="map"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s12">
+            <form method="POST">
+                {% csrf_token %}
+                {% if form.non_field_errors %}
+                    <div class="alert alert-block alert-error">
+                    {% for error in form.non_field_errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                    </div>
+                {% endif %}
+                {{ form.categoria|as_material:"s12" }}
+                {{ form.titulo|as_material:"s12" }}
+                {{ form.descricao|as_material:"s12" }}
+                {{ form.ponto }}
+                <button class="btn waves-effect waves-light" type="submit" name="action">
+                  Salavr Ocorrência
+                  <i class="mdi-content-send right"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block extra_js %}
+
+<script type="text/javascript">
+    var geom = '{{ geom }}';
+    $(document).ready(function(){
+        init();
+        load_cidade_geom();
+        mapa_cidadao_draw_component(geom, '#tools');
+
+        if(geom){
+            geom = wkt.read(geom);
+            map.setCenter(geom.geometry.getBounds().getCenterLonLat(), 15);
+        }
+    });
+</script>
+
+{% endblock extra_js %}

@@ -205,6 +205,14 @@ spam = SpamView.as_view()
 
 @login_required
 def ocorrencia_crud(request, pk=None):
+    template = 'ocorrencia_form.html'
+
+    user_agent = get_user_agent(request)
+    if not user_agent.is_mobile:
+        template = 'ocorrencia_form.html'
+    else:
+        template = 'ocorrencia_form_mob.html'
+
     geom = EMPTY_STRING
     if pk:
         ocorrencia = get_object_or_404(Ocorrencia, pk=pk, user=request.user)
@@ -228,7 +236,7 @@ def ocorrencia_crud(request, pk=None):
 
     return render(
         request,
-        'ocorrencia_form.html',
+        template,
         {
             'form': form,
             'request': request,
