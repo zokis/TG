@@ -117,4 +117,5 @@ $(document).ready(function() {
       belowOrigin: true
     }
   );
+  $('.button-collapse').sideNav();
 });

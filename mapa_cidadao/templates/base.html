@@ -1,4 +1,4 @@
-{% load staticfiles %}{% load materialize %}
+{% load staticfiles %}{% load materialize %}{% load user_agents %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -29,8 +29,31 @@
   <nav>
     <div class="nav-wrapper blue">
       <div class="col s12">
-        -<a href="/" class="brand-logo"><i class="mdi-maps-map left"></i> Mapa do Cidadão</a>
-        <ul class="right hide-on-med-and-down">
+        <a href="/" class="brand-logo">. <i class="mdi-maps-map"></i> Mapa do Cidadão</a>
+        <ul id="slide-out" class="side-nav">
+          <li><a href="{% url 'estatisticas' %}"><i class="mdi-action-trending-up left"></i>Estatísticas</a></li>
+          {% if user.is_anonymous %}
+            <li>
+              <a href="{% url 'socialauth_begin' 'facebook' %}">
+                <i class="mdi-social-public left"></i> Login com o Facebook
+              </a>
+            </li>
+          {% else %}
+            <li>
+              <a href="{% url 'ocorrencia_list' %}" class="navbar-link">
+                <i class="mdi-action-view-list left"></i>Minhas Ocorrências
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'logout' %}" class="navbar-link">
+                <i class="mdi-action-exit-to-app left"></i>Sair
+              </a>
+            </li>
+          {% endif %}
+          <li><a href="{% url 'contact' %}"><i class="mdi-content-mail left"></i> Contato</a></li>
+          <li><a href="{% url 'about' %}"><i class="mdi-action-info-outline left"></i> Sobre</a></li>
+        </ul>
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
           {% if search_form %}
           <li><a href="#" id="toggle-search"><i class="mdi-action-search left"></i>Busca</a></li>
           {% endif %}
@@ -43,9 +66,12 @@
           {% endif %}
           <li><a class="dropdown-button" href="#" data-activates="drop-more"><i class="mdi-navigation-arrow-drop-down"></i></a></li>
         </ul>
+        <a href="#" data-activates="slide-out" class="button-collapse"><i class="mdi-navigation-menu"></i></a>
+
       </div>
     </div>
   </nav>
+  {% if not request|is_mobile %}
   {% if search_form %}
   <div class="row blue darken-3" id="search">
     <div class="container">
@@ -70,7 +96,7 @@
     </div>
   </div>
   {% endif %}
-
+  {% endif %}
   <div class="row" id="max-heigth">
     <div class="col s12">
       {% block content %}

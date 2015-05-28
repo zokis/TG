@@ -45,8 +45,12 @@ get_current_geom = GetCurrentGeomView.as_view()
 @condition(etag_func=None)
 def load_ocorrencias(request):
     geom = get_geom_from_cache()
-    search_form = SearchForm(request.GET or None, geom=geom)
-    ocorrencias = search_form.get_queryset()
+    user_agent = get_user_agent(request)
+    if not user_agent.is_mobile:
+        search_form = SearchForm(request.GET or None, geom=geom)
+        ocorrencias = search_form.get_queryset()
+    else:
+        ocorrencias = Ocorrencia.objects.filter(ponto__intersects=geom)
 
     def flush():
         yield '['
@@ -54,7 +58,6 @@ def load_ocorrencias(request):
             yield dumps({
                 'wkt': filters.safe(ocorrencia.ponto.wkt),
                 'name': ocorrencia.titulo,
-                # filters.escapejs
                 'description': (filters.wordwrap(ocorrencia.descricao, 10)),
                 'pk': ocorrencia.pk,
                 'style': (ocorrencia.get_estilo())
@@ -72,9 +75,13 @@ class IndexView(TemplateView):
         return self.get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
+        user_agent = get_user_agent(self.request)
         context = super(IndexView, self).get_context_data(**kwargs)
         context['POST'] = filters.safe(dumps(self.request.POST))
-        context['search_form'] = SearchForm(self.request.POST or None, geom=None)
+        if not user_agent.is_mobile:
+            context['search_form'] = SearchForm(self.request.POST or None, geom=None)
+        else:
+            context['search_form'] = None
         context['request'] = self.request
         context['user'] = self.request.user
         return context
@@ -142,7 +149,7 @@ def contact(request):
 
 
 class AboutView(TemplateView):
-    template = 'about.html'
+    template_name = 'about.html'
 
     def get_context_data(self, *args, **kwargs):
         context = super(AboutView, self).get_context_data(**kwargs)
