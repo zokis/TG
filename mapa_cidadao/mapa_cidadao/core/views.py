@@ -278,6 +278,12 @@ class OcorrenciaListView(ListView):
     def get_queryset(self):
         return super(OcorrenciaListView, self).get_queryset().filter(user=self.request.user).order_by('-date_add')
 
+    def get_template_names(self):
+        user_agent = get_user_agent(self.request)
+        if user_agent.is_mobile:
+            return ['ocorrencia_list_mob.html']
+        return [self.template_name]
+
 ocorrencia_list = OcorrenciaListView.as_view()
 
 
