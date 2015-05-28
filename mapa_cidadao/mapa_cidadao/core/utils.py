@@ -52,12 +52,12 @@ class JSONSerializer(object):
 
 
 def is_last(objects):
-            it = iter(objects)
-            last = it.next()
-            for val in it:
-                yield last, False
-                last = val
-            yield last, True
+    it = iter(objects)
+    last = it.next()
+    for val in it:
+        yield last, False
+        last = val
+    yield last, True
 
 
 def get_geom_from_cache():
