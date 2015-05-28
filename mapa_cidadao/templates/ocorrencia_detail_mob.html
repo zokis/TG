@@ -9,7 +9,7 @@
             top: auto;
             left: auto;
             width: 100%;
-            height: 500px;
+            height: 250px;
 
             -webkit-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
             -moz-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
@@ -31,7 +31,12 @@
         </div>
     </div>
     <div class="row">
-        <div class="col s6">
+        <div class="col s12">
+            <div id="map"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s12">
             <div class="row">
                 <div class="col s2">
                     <div class="fb-like" data-href="{{ request.build_absolute_uri }}" data-layout="button" data-action="like" data-show-faces="true" data-share="true"></div>
@@ -137,9 +142,6 @@
             <div class="row">
                 <div class="fb-comments" data-href="{{ request.build_absolute_uri }}" data-numposts="5" data-width="100%" data-colorscheme="light"></div>
             </div>
-        </div>
-        <div class="col s6">
-            <div id="map"></div>
         </div>
     </div>
 {% endblock content %}
