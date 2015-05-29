@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.contrib.gis.geos import Polygon
 from django.core.urlresolvers import reverse
 from django.db.models.loading import get_model
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, StreamingHttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.shortcuts import render_to_response
 from django.template import defaultfilters as filters
@@ -77,7 +77,7 @@ def load_ocorrencias(request, x0=None, y0=None, x1=None, y1=None):
             if not last:
                 yield ','
         yield ']'
-    return HttpResponse(flush(), content_type='application/json')
+    return StreamingHttpResponse(flush(), content_type='application/json')
 
 
 class IndexView(TemplateView):
