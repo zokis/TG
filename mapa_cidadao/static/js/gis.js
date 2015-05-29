@@ -32,7 +32,7 @@ function feature_click(event) {
     popup_clear();
     var feature = event.feature;
     var content = "" +
-    "<h2>" +feature.attributes.name + "</h2>" +
+    "<h2 class=\"PopUpMC\">" +feature.attributes.name + "</h2>" +
     "" + feature.attributes.description.slice(0, 51) +
     '&nbsp;...' + 
     '<div class="row">' +
