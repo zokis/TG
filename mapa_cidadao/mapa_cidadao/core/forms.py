@@ -18,8 +18,9 @@ class SearchForm(forms.Form):
         super(SearchForm, self).__init__(*args, **kwargs)
 
     def get_queryset(self):
-        ocorrencias = self.queryset
         if self.is_valid():
+            ocorrencias = self.queryset
+
             categoria = self.cleaned_data.get('categoria', False)
             if categoria:
                 ocorrencias = ocorrencias.filter(categoria=categoria)
@@ -32,9 +33,9 @@ class SearchForm(forms.Form):
             data_fim = self.cleaned_data.get('data_fim', False)
             if data_fim:
                 ocorrencias = ocorrencias.filter(date_add__lte=data_fim)
-            return ocorrencias.order_by('date_add')
+            return ocorrencias
         else:
-            return ocorrencias.order_by('status', 'date_add')
+            return self.queryset
 
 
 class OcorrenciaForm(forms.ModelForm):
