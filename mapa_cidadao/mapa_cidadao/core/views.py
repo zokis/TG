@@ -50,6 +50,21 @@ class MobTemplateMixin(object):
         return [self.template_name]
 
 
+def streaming_ocorrencias(ocorrencias, dumps=dumps):
+    yield '[\n'
+    for ocorrencia, last in is_last(ocorrencias):
+        yield dumps({
+            'wkt': filters.safe(ocorrencia.ponto.wkt),
+            'name': ocorrencia.titulo,
+            'description': filters.wordwrap(ocorrencia.descricao, 10),
+            'pk': ocorrencia.pk,
+            'style': ocorrencia.get_estilo()
+        })
+        if not last:
+            yield ',\n'
+    yield '\n]'
+
+
 def load_ocorrencias(request, x0=None, y0=None, x1=None, y1=None):
     bbox = Polygon.from_bbox([x0, y0, x1, y1]) if x0 else None
     geom = get_geom_from_cache()
@@ -57,20 +72,7 @@ def load_ocorrencias(request, x0=None, y0=None, x1=None, y1=None):
     if not get_user_agent(request).is_mobile:
         ocorrencias = SearchForm(request.GET or None, queryset=ocorrencias).get_queryset()
 
-    def flush():
-        yield '[\n'
-        for ocorrencia, last in is_last(ocorrencias):
-            yield dumps({
-                'wkt': filters.safe(ocorrencia.ponto.wkt),
-                'name': ocorrencia.titulo,
-                'description': filters.wordwrap(ocorrencia.descricao, 10),
-                'pk': ocorrencia.pk,
-                'style': ocorrencia.get_estilo()
-            })
-            if not last:
-                yield ',\n'
-        yield '\n]'
-    response = StreamingHttpResponse(flush(), content_type='application/json')
+    response = StreamingHttpResponse(streaming_ocorrencias(ocorrencias), content_type='application/json')
     response['Cache-Control'] = 'max-age=0, no-cache, no-store'
     return response
 
