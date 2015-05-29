@@ -15,7 +15,6 @@ from django.shortcuts import render_to_response
 from django.template import defaultfilters as filters
 from django.utils import timezone
 from django.views.decorators.cache import cache_page
-from django.views.decorators.http import condition
 from django.views.generic import ListView, TemplateView, View
 from django.views.generic.detail import DetailView
 
@@ -24,7 +23,7 @@ from django_user_agents.utils import get_user_agent
 from mapa_cidadao.core.forms import OcorrenciaForm, ContatoForm, SearchForm
 from mapa_cidadao.core.models import Categoria, Ocorrencia, Spam
 
-from mapa_cidadao.core.utils import is_last, get_geom_from_cache
+from mapa_cidadao.core.utils import get_geom_from_cache, is_last
 
 
 EMPTY_STRING = ''
@@ -51,33 +50,29 @@ class MobTemplateMixin(object):
         return [self.template_name]
 
 
-@condition(etag_func=None)
 def load_ocorrencias(request, x0=None, y0=None, x1=None, y1=None):
     bbox = Polygon.from_bbox([x0, y0, x1, y1]) if x0 else None
     geom = get_geom_from_cache()
-    user_agent = get_user_agent(request)
-    if not user_agent.is_mobile:
-        ocorrencias = SearchForm(request.GET or None, geom=geom, bbox=bbox).get_queryset()
-    else:
-        if bbox:
-            ocorrencias = Ocorrencia.objects.filter(ponto__intersects=geom, ponto__contained=bbox)
-        else:
-            ocorrencias = Ocorrencia.objects.filter(ponto__intersects=geom)
+    ocorrencias = Ocorrencia.objects.filter_by_geom_and_bbox(geom, bbox)
+    if not get_user_agent(request).is_mobile:
+        ocorrencias = SearchForm(request.GET or None, queryset=ocorrencias).get_queryset()
 
     def flush():
-        yield '['
+        yield '[\n'
         for ocorrencia, last in is_last(ocorrencias):
             yield dumps({
                 'wkt': filters.safe(ocorrencia.ponto.wkt),
                 'name': ocorrencia.titulo,
-                'description': (filters.wordwrap(ocorrencia.descricao, 10)),
+                'description': filters.wordwrap(ocorrencia.descricao, 10),
                 'pk': ocorrencia.pk,
-                'style': (ocorrencia.get_estilo())
+                'style': ocorrencia.get_estilo()
             })
             if not last:
-                yield ','
-        yield ']'
-    return StreamingHttpResponse(flush(), content_type='application/json')
+                yield ',\n'
+        yield '\n]'
+    response = StreamingHttpResponse(flush(), content_type='application/json')
+    response['Cache-Control'] = 'max-age=0, no-cache, no-store'
+    return response
 
 
 class IndexView(TemplateView):
@@ -91,7 +86,7 @@ class IndexView(TemplateView):
         context = super(IndexView, self).get_context_data(**kwargs)
         context['POST'] = filters.safe(dumps(self.request.POST))
         if not user_agent.is_mobile:
-            context['search_form'] = SearchForm(self.request.POST or None, geom=None)
+            context['search_form'] = SearchForm(self.request.POST or None)
         else:
             context['search_form'] = None
         context['request'] = self.request
