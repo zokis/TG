@@ -42,6 +42,14 @@ class GetCurrentGeomView(View):
 get_current_geom = GetCurrentGeomView.as_view()
 
 
+class MobTemplateMixin(object):
+    def get_template_names(self):
+        user_agent = get_user_agent(self.request)
+        if user_agent.is_mobile:
+            return [self.template_name.replace('.html', '_mob.html')]
+        return [self.template_name]
+
+
 @condition(etag_func=None)
 def load_ocorrencias(request):
     geom = get_geom_from_cache()
@@ -245,7 +253,7 @@ def ocorrencia_crud(request, pk=None):
     )
 
 
-class OcorrenciaDetailView(DetailView):
+class OcorrenciaDetailView(MobTemplateMixin, DetailView):
     queryset = Ocorrencia.objects
     template_name = 'ocorrencia_detail.html'
 
@@ -255,16 +263,10 @@ class OcorrenciaDetailView(DetailView):
         context['FACEBOOK_APP_ID'] = settings.FACEBOOK_APP_ID
         return context
 
-    def get_template_names(self):
-        user_agent = get_user_agent(self.request)
-        if user_agent.is_mobile:
-            return ['ocorrencia_detail_mob.html']
-        return [self.template_name]
-
 ocorrencia_detalhes = OcorrenciaDetailView.as_view()
 
 
-class OcorrenciaListView(ListView):
+class OcorrenciaListView(MobTemplateMixin, ListView):
     model = Ocorrencia
     template_name = 'ocorrencia_list.html'
 
@@ -275,12 +277,6 @@ class OcorrenciaListView(ListView):
 
     def get_queryset(self):
         return super(OcorrenciaListView, self).get_queryset().filter(user=self.request.user).order_by('-date_add')
-
-    def get_template_names(self):
-        user_agent = get_user_agent(self.request)
-        if user_agent.is_mobile:
-            return ['ocorrencia_list_mob.html']
-        return [self.template_name]
 
 ocorrencia_list = OcorrenciaListView.as_view()
 
