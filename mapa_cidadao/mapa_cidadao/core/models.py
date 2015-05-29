@@ -25,7 +25,7 @@ class Categoria(models.Model):
     ESTILO = {
         'graphicWidth': 32,
         'graphicHeight': 32,
-        'externalGraphic': 'http://104.131.23.39//media/markers/categoria_None_WjVq7yc.png',
+        'externalGraphic': 'http://104.131.23.39/media/markers/C_3674.png',
     }
 
     nome = models.CharField('nome', max_length=75)
