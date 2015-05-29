@@ -61,10 +61,11 @@ class OcorrenciaManager(models.GeoManager):
     def filter_by_geom_and_bbox(self, geom, bbox):
         qs = super(OcorrenciaManager, self).get_queryset()
         if bbox:
-            ocorrencias = qs.filter(ponto__bboverlaps=bbox)
-            if bbox.area != geom.intersection(bbox).area:
-                return ocorrencias.filter(ponto__intersects=geom)
-            return ocorrencias
+            intersection = geom.intersection(bbox)
+            if bbox.area == intersection.area:
+                return qs.filter(ponto__bboverlaps=bbox)
+            else:
+                return qs.filter(ponto__intersects=intersection)
         else:
             return qs.filter(ponto__intersects=geom)
 
