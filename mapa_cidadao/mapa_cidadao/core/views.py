@@ -1,6 +1,6 @@
 # coding: utf-8
 from datetime import timedelta
-from json import dumps
+from ujson import dumps
 
 from django.conf import settings
 from django.contrib import messages
