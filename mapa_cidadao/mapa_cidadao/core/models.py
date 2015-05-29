@@ -1,7 +1,7 @@
 # coding: utf-8
 from os.path import join
 
-from json import dumps, loads
+from ujson import dumps, loads
 
 from django.conf import settings
 from django.contrib.auth.models import User

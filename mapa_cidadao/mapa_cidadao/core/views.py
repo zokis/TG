@@ -1,11 +1,12 @@
 # coding: utf-8
 from datetime import timedelta
-from json import dumps
+from ujson import dumps
 
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.contrib.gis.geos import Polygon
 from django.core.urlresolvers import reverse
 from django.db.models.loading import get_model
 from django.http import HttpResponse, Http404
@@ -51,14 +52,17 @@ class MobTemplateMixin(object):
 
 
 @condition(etag_func=None)
-def load_ocorrencias(request):
+def load_ocorrencias(request, x0=None, y0=None, x1=None, y1=None):
+    bbox = Polygon.from_bbox([x0, y0, x1, y1]) if x0 and y0 and x1 and y1 else None
     geom = get_geom_from_cache()
     user_agent = get_user_agent(request)
     if not user_agent.is_mobile:
-        search_form = SearchForm(request.GET or None, geom=geom)
-        ocorrencias = search_form.get_queryset()
+        ocorrencias = SearchForm(request.GET or None, geom=geom, bbox=bbox).get_queryset()
     else:
-        ocorrencias = Ocorrencia.objects.filter(ponto__intersects=geom)
+        if bbox:
+            ocorrencias = Ocorrencia.objects.filter(ponto__intersects=geom, point__contained=bbox)
+        else:
+            ocorrencias = Ocorrencia.objects.filter(ponto__intersects=geom)
 
     def flush():
         yield '['
