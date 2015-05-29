@@ -23,4 +23,11 @@ urlpatterns = patterns(
     url(r'^ocorrencias/$', 'mapa_cidadao.core.views.ocorrencia_list', name='ocorrencia_list'),
     url(r'^estatisticas/$', 'mapa_cidadao.core.views.estatisticas', name='estatisticas'),
     url(r'^ocorrencias/json/$', 'mapa_cidadao.core.views.load_ocorrencias', name='load_ocorrencias'),
+    url(
+        r'^ocorrencias/json/%s$' % (
+            ''.join(map(lambda x: "(?P<%s>(?:\-)?\d+(?:\.\d+)?)/" % x, ['x0', 'y0', 'x1', 'y1']))
+        ),
+        'mapa_cidadao.core.views.load_ocorrencias',
+        name='load_ocorrencias'
+    ),
 )

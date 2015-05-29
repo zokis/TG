@@ -117,10 +117,15 @@
         $('#map').css('top', ($('nav').height()) + 'px');
     };
     function load_ocorrencias() {
-        var ocorrencia_layer = new OpenLayers.Layer.Vector("Ocorrências");
+        var bbox = map.getExtent().toArray();
+        var layer_name = "Ocorrências";
+        remove_layer_by_name(map, layer_name);
+        var ocorrencia_layer = new OpenLayers.Layer.Vector(layer_name);
         var ocorrencias_features = [];
         $.getJSON(
-            "{% url 'load_ocorrencias' %}", {{ POST }}
+            "{% url 'load_ocorrencias' %}" + bbox[0] +
+            "/" + bbox[1] + "/" + bbox[2] + "/" + bbox[3] + "/",
+            {{ POST }}
         ).done(function(data) {
             $.each(data, function(i, item){
                 var feature = wkt.read(item.wkt);
@@ -142,6 +147,7 @@
       load_cidade_geom();
       load_ocorrencias();
       map_height();
+      map.events.register("moveend", map, load_ocorrencias);
       $(window).resize(map_height);
     });
 </script>

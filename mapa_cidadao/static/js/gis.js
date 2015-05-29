@@ -15,7 +15,6 @@ function init() {
                 enableKinetic: true
             }
         }),
-        // new OpenLayers.Control.Zoom(),
         new OpenLayers.Control.ScaleLine(),
         new OpenLayers.Control.MousePosition(),
         new OpenLayers.Control.Permalink(), ]
@@ -123,9 +122,7 @@ function add_new_feature(layer, new_feature){
     if(new_feature.geometry.x || new_feature.geometry.y){
         new_feature.style.pointRadius = 4;
     }
-
     $('#id_ponto').val(wkt.write(new_feature));
-
     var features_len = layer.features.length;
     for(var i=features_len; i--;){
         var feature = layer.features[i];
@@ -189,4 +186,12 @@ function mapa_cidadao_draw_component_mob(geom){
         }
     });
     point_control.activate();
+}
+
+function remove_layer_by_name(map, layer_name){
+    var layers = map.getLayersByName(layer_name);
+    var i = layers.length;
+    for(; i--;){
+        map.removeLayer(layers[i]);
+    }
 }
