@@ -7,7 +7,6 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models
 from django.db import IntegrityError
-from django.template.defaultfilters import slugify
 from django.utils.deconstruct import deconstructible
 
 from jsonfield import JSONField
@@ -16,7 +15,7 @@ from jsonfield import JSONField
 @deconstructible
 class MarkerRename(object):
     def __call__(self, instance, filename):
-        return join('markers', 'C_%s.png' % slugify(instance.nome))
+        return join('markers', 'C_%s.png' % hash(instance.nome))
 
 
 marker_rename = MarkerRename()
