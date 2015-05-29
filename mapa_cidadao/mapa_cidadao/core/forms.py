@@ -20,7 +20,6 @@ class SearchForm(forms.Form):
     def get_queryset(self):
         if self.is_valid():
             ocorrencias = self.queryset
-
             categoria = self.cleaned_data.get('categoria', False)
             if categoria:
                 ocorrencias = ocorrencias.filter(categoria=categoria)

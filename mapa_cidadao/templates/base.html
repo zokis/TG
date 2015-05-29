@@ -125,7 +125,14 @@
         $.getJSON(
             "{% url 'load_ocorrencias' %}" + bbox[0] +
             "/" + bbox[1] + "/" + bbox[2] + "/" + bbox[3] + "/",
-            {{ POST }}
+            {
+                "categoria": "{{ params.categoria|default:'' }}",
+                "status": "{{ params.status|default:'' }}",
+                "data_fim": "{{ params.data_fim|default:'' }}",
+                "action": "{{ params.action|default:'' }}",
+                "csrfmiddlewaretoken": "{{ params.csrfmiddlewaretoken|default:'' }}",
+                "data_ini": "{{ params.data_ini|default:'' }}",
+            }
         ).done(function(data) {
             $.each(data, function(i, item){
                 var feature = wkt.read(item.wkt);

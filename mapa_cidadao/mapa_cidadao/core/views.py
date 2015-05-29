@@ -91,7 +91,7 @@ class IndexView(TemplateView):
     def get_context_data(self, **kwargs):
         user_agent = get_user_agent(self.request)
         context = super(IndexView, self).get_context_data(**kwargs)
-        context['POST'] = filters.safe(dumps(self.request.POST))
+        context['params'] = self.request.POST
         if not user_agent.is_mobile:
             context['search_form'] = SearchForm(self.request.POST or None)
         else:
