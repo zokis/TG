@@ -22,7 +22,7 @@ class SearchForm(forms.Form):
     def get_queryset(self):
         ocorrencias = Ocorrencia.objects.filter(ponto__intersects=self.geom)
         if self.bbox:
-            ocorrencias = ocorrencias.filter(point__contained=self.bbox)
+            ocorrencias = ocorrencias.filter(ponto__contained=self.bbox)
 
         if self.request_user:
             ocorrencias = ocorrencias.filter(user=self.request_user)

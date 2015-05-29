@@ -53,7 +53,7 @@ class MobTemplateMixin(object):
 
 @condition(etag_func=None)
 def load_ocorrencias(request, x0=None, y0=None, x1=None, y1=None):
-    bbox = Polygon.from_bbox([x0, y0, x1, y1]) if x0 and y0 and x1 and y1 else None
+    bbox = Polygon.from_bbox([x0, y0, x1, y1]) if x0 else None
     geom = get_geom_from_cache()
     user_agent = get_user_agent(request)
     if not user_agent.is_mobile:
