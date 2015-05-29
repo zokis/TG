@@ -65,6 +65,5 @@ def get_geom_from_cache():
     if geom is None:
         geom = MUNICIPIO.geom
         geom.transform(900913)
-
         cache.set("geom_%s" % MUNICIPIO_ID, geom, 30*24*60*60)  # 1 mês
     return geom

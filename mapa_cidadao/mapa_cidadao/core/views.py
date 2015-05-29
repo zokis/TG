@@ -205,8 +205,6 @@ spam = SpamView.as_view()
 
 @login_required
 def ocorrencia_crud(request, pk=None):
-    template = 'ocorrencia_form.html'
-
     user_agent = get_user_agent(request)
     if not user_agent.is_mobile:
         template = 'ocorrencia_form.html'
