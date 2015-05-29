@@ -65,16 +65,21 @@ def streaming_ocorrencias(ocorrencias, dumps=dumps):
     yield '\n]'
 
 
-def load_ocorrencias(request, x0=None, y0=None, x1=None, y1=None):
-    bbox = Polygon.from_bbox([x0, y0, x1, y1]) if x0 else None
-    geom = get_geom_from_cache()
-    ocorrencias = Ocorrencia.objects.filter_by_geom_and_bbox(geom, bbox)
-    if not get_user_agent(request).is_mobile:
-        ocorrencias = SearchForm(request.GET or None, queryset=ocorrencias).get_queryset()
+class LoadOcorrenciasView(View):
+    def get(self, request, x0=None, y0=None, x1=None, y1=None):
+        bbox = Polygon.from_bbox([x0, y0, x1, y1]) if x0 else None
+        geom = get_geom_from_cache()
+        ocorrencias = Ocorrencia.objects.filter_by_geom_and_bbox(geom, bbox)
+        if not get_user_agent(request).is_mobile:
+            ocorrencias = SearchForm(request.GET or None, queryset=ocorrencias).get_queryset()
+        response = StreamingHttpResponse(streaming_ocorrencias(ocorrencias), content_type='application/json')
+        response['Cache-Control'] = 'max-age=0, no-cache, no-store'
+        return response
 
-    response = StreamingHttpResponse(streaming_ocorrencias(ocorrencias), content_type='application/json')
-    response['Cache-Control'] = 'max-age=0, no-cache, no-store'
-    return response
+    def post(self, request, x0=None, y0=None, x1=None, y1=None):
+        return self.get(request, x0, y0, x1, y1)
+
+load_ocorrencias = LoadOcorrenciasView.as_view()
 
 
 class IndexView(TemplateView):
