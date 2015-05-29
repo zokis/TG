@@ -1,8 +1,6 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
 {% block content %}
-
-
 <table>
     <caption>Ocorrências por categoria</caption>
     <thead>
@@ -14,15 +12,14 @@
     </thead>
     <tbody>
 {% for cat, oco, oco_100 in ocos_cats %}
-        <tr>
-            <td>{{ cat }}</td>
-            <td>{{ oco }}</td>
-            <td>{{ oco_100 }}%</td>
-        </tr>
+    <tr>
+        <td>{{ cat }}</td>
+        <td>{{ oco }}</td>
+        <td>{{ oco_100 }}%</td>
+    </tr>
 {% endfor %}
     </tbody>
 </table>
-
 <table>
     <tr>
         <th>Usuáios Ativos no Sistema</th>
@@ -77,5 +74,4 @@
         <td>{{ oco_total }}</td>
     </tr>
 </table>
-
 {% endblock content %}

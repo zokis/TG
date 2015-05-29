@@ -1,13 +1,9 @@
-{% extends 'base.html' %}
-{% load staticfiles %}
+{% extends 'base.html' %}{% load staticfiles %}
 {% block content %}
-
 <div id="map"></div>
-
 {% if not user.is_anonymous %}
 <a id="add-ocorrencia" title="Adicionar uma Nova Ocorrência" href="{% url 'ocorrencia_crud' %}">
     <i class="mdi-content-add-circle-outline"></i>
 </a>
 {% endif %}
-
 {% endblock content %}

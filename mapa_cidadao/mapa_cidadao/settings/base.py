@@ -102,6 +102,7 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'compressor.finders.CompressorFinder',
 )
 # ######### END STATIC FILE CONFIGURATION
 
@@ -204,7 +205,8 @@ THIRD_PARTY_APPS = (
     'social_auth',
     'municipios',
     'materialize_forms',
-    'django_user_agents'
+    'django_user_agents',
+    'compressor'
     # 'django_extensions',
 )
 
@@ -283,3 +285,6 @@ SPAM_DELETE = 10
 
 
 MUNICIPIO_ID = 3549904
+
+
+COMPRESS_ENABLED = True

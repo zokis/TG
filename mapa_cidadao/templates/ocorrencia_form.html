@@ -1,8 +1,6 @@
-{% extends 'base.html' %}
-{% load staticfiles %}
-{% load materialize %}
+{% extends 'base.html' %}{% load staticfiles %}{% load materialize %}{% load compress %}
 
-{% block extra_css %}
+{% block extra_css %}{% compress css %}
 <style type="text/css">
     #tools{
         font-size: 3em;
@@ -13,14 +11,11 @@
         border-radius: 50px;
     }
 </style>
-{% endblock extra_css %}
+{% endcompress %}{% endblock extra_css %}
 
 {% block content %}
     <div id="map"></div>
-
-    <div id="tools">
-    </div>
-
+    <div id="tools"></div>
     <div id="form-overlay" style="left:45;top:0;">
         <center>
             <h4>
@@ -53,32 +48,26 @@
 {% endblock content %}
 
 {% block extra_js %}
-
+<script type="text/javascript">var geom = '{{ geom }}';</script>
+{% compress js %}
 <script type="text/javascript">
-    var geom = '{{ geom }}';
-
     var map_height = function () {
         $('#map').css('height', $(window).height()- $('nav').height());
         $('#map').css('top', ($('nav').height()) + 'px');
     };
-
     $(document).ready(function(){
         init();
         load_cidade_geom();
         mapa_cidadao_draw_component(geom, '#tools');
-
         if(geom){
             geom = wkt.read(geom);
             map.setCenter(geom.geometry.getBounds().getCenterLonLat(), 15);
         }
-
         $('#mc_mover_form').mover_h('#form-overlay');
         $('#mc_mover_form').mover_v('#form-overlay');
-
         map_height();
         $(window).resize(map_height);
-
     });
 </script>
-
+{% endcompress %}
 {% endblock extra_js %}

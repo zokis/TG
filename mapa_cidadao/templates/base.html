@@ -1,4 +1,4 @@
-{% load staticfiles %}{% load materialize %}{% load user_agents %}
+{% load staticfiles %}{% load materialize %}{% load user_agents %}{% load compress %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -15,8 +15,10 @@
   <meta name="robots" content="index,follow">
 
   <!-- CSS  -->
+  {% compress css %}
   <link href="{% static 'css/materialize.css' %}" type="text/css" rel="stylesheet" media="screen,projection">
   <link href="{% static 'css/project.css' %}" type="text/css" rel="stylesheet" media="screen,projection">
+  {% endcompress %}
   {% block extra_css %}{% if request|is_mobile %}
   <style type="text/css">.PopUpMC{font-size: 24px}</style>
   {% endif %}{% endblock extra_css %}
@@ -104,60 +106,61 @@
   </div>
 
 <script src="http://code.jquery.com/jquery-latest.js"></script>
-<script src="{% static "js/materialize.min.js" %}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/OpenLayers.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/lib/OpenLayers/Lang/pt-BR.js"></script>
+{% compress js %}
+<script src="{% static "js/materialize.min.js" %}"></script>
 <script src="{% static "js/project.js" %}"></script>
 <script src="{% static "js/gis.js" %}"></script>
+{% endcompress %}
 
 {% block extra_js %}
 <script type="text/javascript">
-    var map_height = function () {
-        $('#map').css('height', $(window).height()- $('nav').height());
-        $('#map').css('top', ($('nav').height()) + 'px');
-    };
-    function load_ocorrencias() {
-        var bbox = map.getExtent().toArray();
-        var layer_name = "Ocorrências";
-        remove_layer_by_name(map, layer_name);
-        var ocorrencia_layer = new OpenLayers.Layer.Vector(layer_name);
-        var ocorrencias_features = [];
-        $.getJSON(
-            "{% url 'load_ocorrencias' %}" + bbox[0] +
-            "/" + bbox[1] + "/" + bbox[2] + "/" + bbox[3] + "/",
-            {
-                "categoria": "{{ params.categoria|default:'' }}",
-                "status": "{{ params.status|default:'' }}",
-                "data_fim": "{{ params.data_fim|default:'' }}",
-                "action": "{{ params.action|default:'' }}",
-                "csrfmiddlewaretoken": "{{ params.csrfmiddlewaretoken|default:'' }}",
-                "data_ini": "{{ params.data_ini|default:'' }}",
-            }
-        ).done(function(data) {
-            $.each(data, function(i, item){
-                var feature = wkt.read(item.wkt);
-                feature.attributes.name = item.name;
-                feature.attributes.pk = item.pk;
-                feature.attributes.description = item.description;
-                feature.style = item.style;
-                ocorrencias_features.push(feature);
-
-                ocorrencia_layer.addFeatures(ocorrencias_features);
-                ocorrencia_layer.events.register('featureclick', ocorrencia_layer, feature_click);
-                ocorrencia_layer.events.register('nofeatureclick', ocorrencia_layer, popup_clear);
-                map.addLayer(ocorrencia_layer);
-            });
-        });
-    }
-    $(document).ready(function(){
-      init();
-      load_cidade_geom();
-      load_ocorrencias();
-      map_height();
-      map.events.register("moveend", map, load_ocorrencias);
-      $(window).resize(map_height);
+function load_ocorrencias() {
+  var bbox = map.getExtent().toArray();
+  var layer_name = "Ocorrências";
+  remove_layer_by_name(map, layer_name);
+  var ocorrencia_layer = new OpenLayers.Layer.Vector(layer_name);
+  var ocorrencias_features = [];
+  $.getJSON(
+    "{% url 'load_ocorrencias' %}" + bbox[0] +
+    "/" + bbox[1] + "/" + bbox[2] + "/" + bbox[3] + "/", {
+    "categoria": "{{ params.categoria|default:'' }}",
+    "status": "{{ params.status|default:'' }}",
+    "data_fim": "{{ params.data_fim|default:'' }}",
+    "action": "{{ params.action|default:'' }}",
+    "csrfmiddlewaretoken": "{{ params.csrfmiddlewaretoken|default:'' }}",
+    "data_ini": "{{ params.data_ini|default:'' }}",
+  }).done(function (data) {
+    $.each(data, function (i, item) {
+      var feature = wkt.read(item.wkt);
+      feature.attributes.name = item.name;
+      feature.attributes.pk = item.pk;
+      feature.attributes.description = item.description;
+      feature.style = item.style;
+      ocorrencias_features.push(feature);
+      ocorrencia_layer.addFeatures(ocorrencias_features);
+      ocorrencia_layer.events.register('featureclick', ocorrencia_layer, feature_click);
+      ocorrencia_layer.events.register('nofeatureclick', ocorrencia_layer, popup_clear);
+      map.addLayer(ocorrencia_layer);
     });
+  });
+}
 </script>
+{% compress js %}<script type="text/javascript">
+var map_height = function () {
+  $('#map').css('height', $(window).height() - $('nav').height());
+  $('#map').css('top', ($('nav').height()) + 'px');
+};
+$(document).ready(function () {
+  init();
+  load_cidade_geom();
+  load_ocorrencias();
+  map_height();
+  map.events.register("moveend", map, load_ocorrencias);
+  $(window).resize(map_height);
+});
+</script>{% endcompress %}
 {% endblock extra_js %}
 </body>
 </html>

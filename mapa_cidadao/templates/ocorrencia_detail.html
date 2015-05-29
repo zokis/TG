@@ -1,23 +1,5 @@
-{% extends 'base.html' %}
-{% load staticfiles %}
-{% load votacao %}
-
-{% block extra_css %}
-    <style type="text/css">
-        #map{
-            position: relative;
-            top: auto;
-            left: auto;
-            width: 100%;
-            height: 500px;
-
-            -webkit-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
-            -moz-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
-            box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
-            border: 1px #2196F3 inset;
-        }
-    </style>
-{% endblock extra_css %}
+{% extends 'base.html' %}{% load staticfiles %}{% load votacao %}{% load compress %}
+{% block extra_css %}{% include 'css_map.html' %}{% endblock extra_css %}
 
 {% block content %}
     <div class="row">
@@ -142,13 +124,10 @@
             <div id="map"></div>
         </div>
     </div>
-
 {% endblock content %}
 
 {% block extra_js %}
-
 <div id="fb-root"></div>
-
 <script>(function(d, s, id) {
   var js, fjs = d.getElementsByTagName(s)[0];
   if (d.getElementById(id)) return;
@@ -158,39 +137,7 @@
 }(document, 'script', 'facebook-jssdk'));</script>
 
 <script type="text/javascript">
-    var geom = '{{ object.ponto.wkt }}';
-    $(document).ready(function(){
-        init();
-        load_cidade_geom();
-
-        geom = wkt.read(geom);
-        map.setCenter(geom.geometry.getBounds().getCenterLonLat(), 15);
-
-        var votos = {{ object.get_votos }};
-        var vetos = {{ object.get_vetos }};
-        var votos_total = votos + vetos;
-
-        var votos_percent = (votos * 100 / votos_total);
-        var vetos_percent = (100 - votos_percent);
-        if(isNaN(votos_percent))
-            votos_percent = 0;
-        if(isNaN(vetos_percent))
-            vetos_percent = 0;
-        votos_percent = votos_percent + '%';
-        vetos_percent = vetos_percent + '%';
-
-        $('#bar-votos .determinate').css('width', votos_percent);
-        $('#bar-vetos .determinate').css('width', vetos_percent);
-
-        $('#percent-votos').html('' + votos + ' - ' + votos_percent);
-        $('#percent-vetos').html('' + vetos + ' - ' + vetos_percent);
-
-        var pontos_layer = new OpenLayers.Layer.Vector("Pontos");
-        map.addLayers([pontos_layer]);
-        geom.style = mapa_cidadao_style;
-        geom.style.pointRadius = 4;
-        pontos_layer.addFeatures(geom);
-    });
+var geom = '{{ object.ponto.wkt }}';var votos = {{ object.get_votos }};var vetos = {{ object.get_vetos }};
 </script>
-
+{% compress js %}<script type="text/javascript" src="{% static 'js/detail.js' %}"></script>{% endcompress %}
 {% endblock extra_js %}
