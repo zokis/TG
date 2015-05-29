@@ -4,7 +4,7 @@ from django import forms
 from django.contrib.gis.geos import GEOSGeometry
 
 
-from .models import Categoria, Ocorrencia
+from mapa_cidadao.core.models import Categoria, Ocorrencia
 
 
 class SearchForm(forms.Form):
@@ -14,18 +14,11 @@ class SearchForm(forms.Form):
     status = forms.ChoiceField(choices=Ocorrencia.STATUS_CHOICES, label=u"Status", required=False)
 
     def __init__(self, *args, **kwargs):
-        self.geom = kwargs.pop('geom')
-        self.bbox = kwargs.pop('bbox', False)
-        self.request_user = kwargs.pop('request_user', False)
+        self.queryset = kwargs.pop('queryset', Ocorrencia.objects)
         super(SearchForm, self).__init__(*args, **kwargs)
 
     def get_queryset(self):
-        ocorrencias = Ocorrencia.objects.filter(ponto__intersects=self.geom)
-        if self.bbox:
-            ocorrencias = ocorrencias.filter(ponto__contained=self.bbox)
-
-        if self.request_user:
-            ocorrencias = ocorrencias.filter(user=self.request_user)
+        ocorrencias = self.queryset
         if self.is_valid():
             categoria = self.cleaned_data.get('categoria', False)
             if categoria:
