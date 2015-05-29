@@ -57,6 +57,18 @@ class Categoria(models.Model):
         return u'%s' % (self.nome)
 
 
+class OcorrenciaManager(models.GeoManager):
+    def filter_by_geom_and_bbox(self, geom, bbox):
+        qs = super(OcorrenciaManager, self).get_queryset()
+        if bbox:
+            ocorrencias = qs.filter(ponto__bboverlaps=bbox)
+            if bbox.area != geom.intersection(bbox).area:
+                return ocorrencias.filter(ponto__intersects=geom)
+            return ocorrencias
+        else:
+            return qs.filter(ponto__intersects=geom)
+
+
 class Ocorrencia(models.Model):
     STATUS_CHOICES = (
         (1, u'Aberto'),
@@ -124,7 +136,7 @@ class Ocorrencia(models.Model):
             raise IntegrityError(u'Cadastre um ponto ou um poligono')
         return super(Ocorrencia, self).save(*args, **kwargs)
 
-    objects = models.GeoManager()
+    objects = OcorrenciaManager()
 
 
 class Spam(models.Model):
