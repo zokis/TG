@@ -15,7 +15,7 @@ from jsonfield import JSONField
 @deconstructible
 class MarkerRename(object):
     def __call__(self, instance, filename):
-        return join('markers', 'C_%s.png' % hash(instance.nome)[1:5])
+        return join('markers', 'C_%s.png' % str(hash(instance.nome))[1:5])
 
 
 marker_rename = MarkerRename()
