@@ -1,6 +1,6 @@
 # coding: utf-8
 from datetime import timedelta
-from ujson import dumps
+from json import dumps
 
 from django.conf import settings
 from django.contrib import messages
@@ -75,41 +75,41 @@ def load_ocorrenciasx(request, x0=None, y0=None, x1=None, y1=None):
     return response
 
 
-# def load_ocorrencias(request, x0=None, y0=None, x1=None, y1=None):
-#     geom = get_geom_from_cache()
-#     ocorrencias = Ocorrencia.objects.filter(ponto__intersects=geom)
-#     if not get_user_agent(request).is_mobile:
-#         ocorrencias = SearchForm(request.GET or None, queryset=ocorrencias).get_queryset()
+def load_ocorrencias(request, x0=None, y0=None, x1=None, y1=None):
+    geom = get_geom_from_cache()
+    ocorrencias = Ocorrencia.objects.filter(ponto__intersects=geom)
+    if not get_user_agent(request).is_mobile:
+        ocorrencias = SearchForm(request.GET or None, queryset=ocorrencias).get_queryset()
 
-#     # def flush():
-#     #     yield '[\n'
-#     #     for ocorrencia, last in is_last(ocorrencias):
-#     #         yield dumps({
-#     #             'wkt': filters.safe(ocorrencia.ponto.wkt),
-#     #             'name': ocorrencia.titulo,
-#     #             'description': filters.wordwrap(ocorrencia.descricao, 10),
-#     #             'pk': ocorrencia.pk,
-#     #             'style': ocorrencia.get_estilo()
-#     #         })
-#     #         if not last:
-#     #             yield ',\n'
-#     #     yield '\n]'
-#     x = dumps(
-#         [
-#             {
-#                 'wkt': filters.safe(ocorrencia.ponto.wkt),
-#                 'name': ocorrencia.titulo,
-#                 'description': filters.wordwrap(ocorrencia.descricao, 10),
-#                 'pk': ocorrencia.pk,
-#                 'style': ocorrencia.get_estilo()
-#             }
-#             for ocorrencia in ocorrencias
-#         ]
-#     )
+    # def flush():
+    #     yield '[\n'
+    #     for ocorrencia, last in is_last(ocorrencias):
+    #         yield dumps({
+    #             'wkt': filters.safe(ocorrencia.ponto.wkt),
+    #             'name': ocorrencia.titulo,
+    #             'description': filters.wordwrap(ocorrencia.descricao, 10),
+    #             'pk': ocorrencia.pk,
+    #             'style': ocorrencia.get_estilo()
+    #         })
+    #         if not last:
+    #             yield ',\n'
+    #     yield '\n]'
+    x = dumps(
+        [
+            {
+                'wkt': filters.safe(ocorrencia.ponto.wkt),
+                'name': ocorrencia.titulo,
+                'description': filters.wordwrap(ocorrencia.descricao, 10),
+                'pk': ocorrencia.pk,
+                'style': ocorrencia.get_estilo()
+            }
+            for ocorrencia in ocorrencias
+        ]
+    )
 
-#     response = HttpResponse(x, content_type='application/json')
-#     response['Cache-Control'] = 'max-age=0, no-cache, no-store'
-#     return response
+    response = HttpResponse(x, content_type='application/json')
+    response['Cache-Control'] = 'max-age=0, no-cache, no-store'
+    return response
 
 
 class IndexView(TemplateView):
