@@ -63,7 +63,7 @@ class OcorrenciaManager(models.GeoManager):
         if bbox:
             intersection = geom.intersection(bbox)
             if bbox.area == intersection.area:
-                return qs.filter(ponto__bboverlaps=bbox)
+                return qs.filter(ponto__bbcontains=bbox)
             else:
                 return qs.filter(ponto__intersects=intersection)
         else:
