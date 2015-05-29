@@ -60,7 +60,7 @@ def load_ocorrencias(request, x0=None, y0=None, x1=None, y1=None):
         ocorrencias = SearchForm(request.GET or None, geom=geom, bbox=bbox).get_queryset()
     else:
         if bbox:
-            ocorrencias = Ocorrencia.objects.filter(ponto__intersects=geom, point__contained=bbox)
+            ocorrencias = Ocorrencia.objects.filter(ponto__intersects=geom, ponto__contained=bbox)
         else:
             ocorrencias = Ocorrencia.objects.filter(ponto__intersects=geom)
 
