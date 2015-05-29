@@ -15,12 +15,15 @@ class SearchForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         self.geom = kwargs.pop('geom')
-        self.bbox = kwargs.pop('bbox', None)
+        self.bbox = kwargs.pop('bbox', False)
         self.request_user = kwargs.pop('request_user', False)
         super(SearchForm, self).__init__(*args, **kwargs)
 
     def get_queryset(self):
         ocorrencias = Ocorrencia.objects.filter(ponto__intersects=self.geom)
+        if self.bbox:
+            ocorrencias = ocorrencias.filter(point__contained=self.bbox)
+
         if self.request_user:
             ocorrencias = ocorrencias.filter(user=self.request_user)
         if self.is_valid():
@@ -36,9 +39,9 @@ class SearchForm(forms.Form):
             data_fim = self.cleaned_data.get('data_fim', False)
             if data_fim:
                 ocorrencias = ocorrencias.filter(date_add__lte=data_fim)
-            return ocorrencias.order_by('date_add')[:225]
+            return ocorrencias.order_by('date_add')
         else:
-            return ocorrencias.order_by('status', 'date_add')[:125]
+            return ocorrencias.order_by('status', 'date_add')
 
 
 class OcorrenciaForm(forms.ModelForm):
