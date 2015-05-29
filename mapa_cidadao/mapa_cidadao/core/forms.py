@@ -15,6 +15,7 @@ class SearchForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         self.geom = kwargs.pop('geom')
+        self.bbox = kwargs.pop('bbox')
         self.request_user = kwargs.pop('request_user', False)
         super(SearchForm, self).__init__(*args, **kwargs)
 
