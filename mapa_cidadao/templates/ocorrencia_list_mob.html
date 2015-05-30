@@ -15,7 +15,6 @@
             <thead>
                 <tr>
                     <th>Título</th>
-                    <th>Data</th>
                     <th>Status</th>
                     <th>Categoria</th>
                     <th>Detalhes</th>
@@ -26,16 +25,15 @@
                 {% for object in object_list %}
                     <tr>
                         <td><a href="{% url 'ocorrencia_crud' object.pk %}">{{ object.titulo|default:'---' }}</a></td>
-                        <td>{{ object.date_add|default:"---" }}</td>
                         <td>{{ object.get_status_display }}</td>
                         <td>{{ object.categoria }}</td>
                         <td>
-                            <a href="{% url 'ocorrencia_detail' object.pk %}" class="waves-effect waves-light btn">
+                            <a href="{% url 'ocorrencia_detail' object.pk %}" class="waves-effect waves-light">
                                 <i class="mdi-image-details"></i>
                             </a>
                         </td>
                         <td>
-                            <a href="#modal-delete" class="modal-delete red waves-effect waves-light btn">
+                            <a href="#modal-delete" class="modal-delete red waves-effect waves-light">
                                 <input type="hidden" value="{{ object.pk }}">
                                 <i class="mdi-action-delete"></i>
                             </a>
