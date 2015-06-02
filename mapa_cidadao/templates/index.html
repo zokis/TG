@@ -2,8 +2,11 @@
 {% block content %}
 <div id="map"></div>
 {% if not user.is_anonymous %}
+{% endif %}
 <a id="add-ocorrencia" title="Adicionar uma Nova Ocorrência" href="{% url 'ocorrencia_crud' %}">
     <i class="mdi-content-add-circle-outline"></i>
 </a>
-{% endif %}
+<a id="locate" title="Localizar" href="#">
+    <i class="mdi-device-gps-fixed"></i>
+</a>
 {% endblock content %}
