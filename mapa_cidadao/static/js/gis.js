@@ -1,4 +1,5 @@
 var map;
+var geolocate;
 var epsg4326 = new OpenLayers.Projection("EPSG:4326");
 var epsg900913 = new OpenLayers.Projection("EPSG:900913");
 var wkt = new OpenLayers.Format.WKT();
@@ -210,5 +211,23 @@ function set_center_if_hash(){
             return undefined;
         var position = new OpenLayers.LonLat(lon, lat);
         map.setCenter(position, 15);
+    }
+}
+
+
+function init_geolocate(){
+    var locate_btn = $("#locate");
+    if (navigator.geolocation) {
+        locate_btn.click(function(){
+            navigator.geolocation.getCurrentPosition(function(position) {
+                var lonLat = new OpenLayers.LonLat(
+                    position.coords.longitude,
+                    position.coords.latitude
+                ).transform(epsg4326, epsg900913);
+                map.setCenter(lonLat, 15);
+            });
+        });
+    } else {
+        locate_btn.hide();
     }
 }

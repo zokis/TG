@@ -164,6 +164,7 @@ $(document).ready(function () {
   map.events.register("moveend", map, moveend_e);
   $(window).resize(map_height);
   set_center_if_hash();
+  init_geolocate();
 });
 </script>{% endcompress %}
 {% endblock extra_js %}
