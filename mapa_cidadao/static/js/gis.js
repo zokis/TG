@@ -137,7 +137,7 @@ function mapa_cidadao_draw_component(geom, container){
     var component_style = '<style type="text/css">' +
         '#draw-point{' +
         'position:absolute; ' +
-        'right:90px; ' +
+        'right:130px; ' +
         'top:70px;' +
         'z-index:10000; ' +
         '}' +
