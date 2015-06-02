@@ -6,7 +6,7 @@
     <i class="mdi-content-add-circle-outline"></i>
 </a>
 {% endif %}
-<a id="locate" title="Localizar" href="#">
+{% if not request|is_mobile %}<a id="locate" title="Localizar" href="#">
     <i class="mdi-device-gps-fixed"></i>
-</a>
+</a>{% endif %}
 {% endblock content %}

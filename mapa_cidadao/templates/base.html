@@ -72,8 +72,7 @@
       </div>
     </div>
   </nav>
-  {% if not request|is_mobile %}
-  {% if search_form %}
+  {% if not request|is_mobile %}{% if search_form %}
   <div class="row blue darken-3" id="search">
     <div class="container">
       <form method="POST">
@@ -96,26 +95,20 @@
       </form>
     </div>
   </div>
-  {% endif %}
-  {% endif %}
+  {% endif %}{% endif %}
   <div class="row" id="max-heigth">
     <div class="col s12">
-      {% block content %}
-      {% endblock content %}
+      {% block content %}{% endblock content %}
     </div>
   </div>
 
 <script src="http://code.jquery.com/jquery-latest.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/OpenLayers.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/lib/OpenLayers/Lang/pt-BR.js"></script>
-{% compress js %}
-<script src="{% static "js/materialize.min.js" %}"></script>
+{% compress js %}<script src="{% static "js/materialize.min.js" %}"></script>
 <script src="{% static "js/project.js" %}"></script>
-<script src="{% static "js/gis.js" %}"></script>
-{% endcompress %}
-
-{% block extra_js %}
-<script type="text/javascript">
+<script src="{% static "js/gis.js" %}"></script>{% endcompress %}
+{% block extra_js %}<script type="text/javascript">
 function load_ocorrencias() {
   var bbox = map.getExtent().toArray();
   var layer_name = "Ocorrências";
@@ -161,7 +154,6 @@ $(document).ready(function () {
   set_center_if_hash();
   init_geolocate();
 });
-</script>{% endcompress %}
-{% endblock extra_js %}
+</script>{% endcompress %}{% endblock extra_js %}
 </body>
 </html>
