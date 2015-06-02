@@ -3,6 +3,7 @@ from django.conf import settings
 from django.conf.urls import include, patterns, url
 from django.contrib.auth.views import logout
 from django.contrib import admin
+from django.views.generic.base import TemplateView
 
 urlpatterns = patterns(
     '',
@@ -23,5 +24,6 @@ if settings.DEBUG:
             {
                 'document_root': settings.MEDIA_ROOT
             }
-        )
+        ),
+        (r'^404/$', TemplateView.as_view(template_name='404.html')),
     )
