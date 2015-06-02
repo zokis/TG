@@ -195,3 +195,20 @@ function remove_layer_by_name(map, layer_name){
         map.removeLayer(layers[i]);
     }
 }
+
+function change_hash() {
+    var lonlat = map.center;
+    window.location.hash = lonlat.lon.toString() + ',' + lonlat.lat.toString();
+}
+
+function set_center_if_hash(){
+    if(window.location.hash){
+        var lonlat = window.location.hash.replace("#", "").split(',');
+        var lon = parseFloat(lonlat[0]);
+        var lat = parseFloat(lonlat[1]);
+        if(isNaN(lon) || isNaN(lat))
+            return undefined;
+        var position = new OpenLayers.LonLat(lon, lat);
+        map.setCenter(position, 15);
+    }
+}
