@@ -148,20 +148,15 @@ function load_ocorrencias() {
 }
 </script>
 {% compress js %}<script type="text/javascript">
-var map_height = function () {
-  $('#map').css('height', $(window).height() - $('nav').height());
-  $('#map').css('top', ($('nav').height()) + 'px');
-};
-var moveend_e = function (){
-  load_ocorrencias();
-  change_hash();
-}
 $(document).ready(function () {
   init();
   load_cidade_geom();
   load_ocorrencias();
   map_height();
-  map.events.register("moveend", map, moveend_e);
+  map.events.register("moveend", map, function (){
+    load_ocorrencias();
+    change_hash();
+  });
   $(window).resize(map_height);
   set_center_if_hash();
   init_geolocate();

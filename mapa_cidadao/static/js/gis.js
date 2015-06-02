@@ -231,3 +231,8 @@ function init_geolocate(){
         locate_btn.hide();
     }
 }
+
+var map_height = function () {
+  $('#map').css('height', $(window).height() - $('nav').height());
+  $('#map').css('top', ($('nav').height()) + 'px');
+};
