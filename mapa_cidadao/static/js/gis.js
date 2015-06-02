@@ -137,7 +137,7 @@ function mapa_cidadao_draw_component(geom, container){
     var component_style = '<style type="text/css">' +
         '#draw-point{' +
         'position:absolute; ' +
-        'right:80px; ' +
+        'right:90px; ' +
         'top:70px;' +
         'z-index:10000; ' +
         '}' +
@@ -147,17 +147,11 @@ function mapa_cidadao_draw_component(geom, container){
         'top:70px; ' +
         'z-index:10000; ' +
         '}' +
-        '#locate-me{' +
-        'position:absolute; ' +
-        'right:140px; ' +
-        'top:70px; ' +
-        'z-index:10000; ' +
-        '}' +
         '</style>';
     $('html > head').append(component_style);
     var component_html = '' +
         '<i id="draw-point" class="mdi-maps-pin-drop" title="Adicionar Novo Ponto"></i>' +
-        '<i id="locate-me" class="mdi-device-gps-fixed" title="Localizar"></i>' +
+        '<i id="locate" class="mdi-device-gps-fixed" title="Localizar"></i>' +
         '<i id="pam" class="mdi-maps-navigation blue" title="Mover-se pelo Mapa">';
     $(container).append(component_html);
     var pontos_layer = new OpenLayers.Layer.Vector("Pontos");
