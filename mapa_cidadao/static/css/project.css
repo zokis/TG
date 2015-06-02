@@ -36,7 +36,16 @@
 
 #add-ocorrencia{
     position:absolute; 
-    right:80px; 
+    right:90px; 
+    top:70px;
+    z-index:9;
+    font-size: 3em;
+    color: #000;
+}
+
+#locate{
+    position:absolute; 
+    right:35px; 
     top:70px;
     z-index:9;
     font-size: 3em;
