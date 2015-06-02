@@ -151,7 +151,6 @@ function mapa_cidadao_draw_component(geom, container){
     $('html > head').append(component_style);
     var component_html = '' +
         '<i id="draw-point" class="mdi-maps-pin-drop" title="Adicionar Novo Ponto"></i>' +
-        '<i id="locate" class="mdi-device-gps-fixed" title="Localizar"></i>' +
         '<i id="pam" class="mdi-maps-navigation blue" title="Mover-se pelo Mapa">';
     $(container).append(component_html);
     var pontos_layer = new OpenLayers.Layer.Vector("Pontos");
