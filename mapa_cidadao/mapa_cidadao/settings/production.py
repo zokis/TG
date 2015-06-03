@@ -44,3 +44,7 @@ ALLOWED_HOSTS = ['104.131.23.39']
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_FILE_PATH = '/tmp/app-messages'
