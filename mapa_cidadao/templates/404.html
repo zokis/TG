@@ -1,6 +1,5 @@
-{% extends "base.html" %}
-
-{% block extra_css %}
+{% extends "base.html" %}{% load compress %}
+{% block extra_css %}{% compress css %}
 <style type="text/css">
 div.dialog {
 width: 95%;
@@ -35,7 +34,7 @@ color: #666;
 box-shadow: 0 3px 8px rgba(50, 50, 50, 0.17);
 }
 </style>
-{% endblock extra_css %}
+{% endcompress %}{% endblock extra_css %}
 {% block content %}
 <div class="dialog">
     <div>
@@ -45,5 +44,4 @@ box-shadow: 0 3px 8px rgba(50, 50, 50, 0.17);
     <p>Um administrador foi informado do problema!</p>
 </div>
 {% endblock content %}
-
 {% block extra_js %}{% endblock extra_js %}
