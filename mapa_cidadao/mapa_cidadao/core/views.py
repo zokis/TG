@@ -174,17 +174,18 @@ about = AboutView.as_view()
 
 
 class VotoView(View):
-    def post(self, request, pk, op='voto'):
+    def post(self, request, pk, op='votar'):
         ocorrencia = get_object_or_404(Ocorrencia, pk=pk)
         try:
-            if op == 'voto':
+            if op == 'votar':
                 ocorrencia.votar(request.user)
             else:
                 ocorrencia.vetar(request.user)
             messages.success(request, u"Voto computado")
-        except Exception as e:
-            messages.error(request, unicode(e))
-
+        except Voto.VotoException as e:
+            messages.error(request,  unicode(e))
+        except Veto.VetoException as e:
+            messages.error(request,  unicode(e))
         return redirect(reverse('ocorrencia_detail', args=(pk,)))
 
 votar = VotoView.as_view()
@@ -197,7 +198,6 @@ class ChangeStatusView(View):
             raise Http404
         ocorrencia.status = int(status)
         ocorrencia.save()
-
         return redirect(reverse('ocorrencia_detail', args=(pk,)))
 
 change_status = ChangeStatusView.as_view()
