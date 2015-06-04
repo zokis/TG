@@ -214,7 +214,6 @@ function set_center_if_hash(){
     }
 }
 
-
 function init_geolocate(){
     var locate_btn = $("#locate");
     if (navigator.geolocation) {
