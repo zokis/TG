@@ -70,7 +70,7 @@
                     <b>Autor:</b>
                 </div>
                 <div class="col s10">
-                    {% if not object.perigosa %}
+                    {% if not object.categoria.perigosa %}
                         <a target="_blank" href="https://facebook.com/{{ object.user }}/">{{ object.user }}</a>
                     {% else %}
                         ---
