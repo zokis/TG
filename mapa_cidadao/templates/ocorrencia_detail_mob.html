@@ -73,7 +73,11 @@
                     <b>Autor:</b>
                 </div>
                 <div class="col s9">
-                    <a target="_blank" href="https://facebook.com/{{ object.user }}/">{{ object.user }}</a>
+                    {% if not object.perigosa %}
+                        <a target="_blank" href="https://facebook.com/{{ object.user }}/">{{ object.user }}</a>
+                    {% else %}
+                        ---
+                    {% endif %}
                 </div>
             </div>
             <div class="row">

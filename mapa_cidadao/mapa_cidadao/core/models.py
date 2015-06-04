@@ -32,6 +32,7 @@ class Categoria(models.Model):
     descricao = models.CharField(u'Descrição', max_length=200)
     marker = models.FileField(upload_to=marker_rename, blank=True, null=True)
     estilo = JSONField(default=dumps(ESTILO), blank=True, null=True)
+    perigosa = models.BooleanField(default=False)
 
     def get_estilo(self):
         if self.estilo:
