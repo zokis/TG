@@ -1,6 +1,4 @@
 # coding: utf-8
-from .facebook_settings import FACEBOOK_APP_ID, FACEBOOK_API_SECRET
-
 from os.path import abspath, basename, dirname, join, normpath
 from sys import path
 
@@ -268,8 +266,8 @@ SOCIAL_AUTH_COMPLETE_URL_NAME = 'socialauth_complete'
 SOCIAL_AUTH_ASSOCIATE_URL_NAME = 'socialauth_associate_complete'
 
 # Facebook
-FACEBOOK_APP_ID = FACEBOOK_APP_ID
-FACEBOOK_API_SECRET = FACEBOOK_API_SECRET
+FACEBOOK_APP_ID = "FACEBOOK_APP_ID"
+FACEBOOK_API_SECRET = "FACEBOOK_API_SECRET"
 
 # ######### END FACEBOOK LOGIN CONFIGURATION
 
