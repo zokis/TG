@@ -9,4 +9,37 @@
 {% if not request|is_mobile %}<a id="locate" title="Localizar" href="#">
     <i class="mdi-device-gps-fixed"></i>
 </a>{% endif %}
+<div id="legend" class="modal modal-fixed-footer">
+  <div class="modal-content">
+    <h4>Legenda</h4>
+    <ul>
+    {% for categoria in categorias %}
+        <li><img src="{{ categoria.marker.url }}" /> {{ categoria }}</li>
+    {% endfor %}
+    </ul>
+  </div>
+  <div class="modal-footer">
+    <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Fechar</a>
+  </div>
+</div>
+<div id="legend-box">
+    <center>
+        <a title="Legenda" class="waves-effect waves-light btn modal-trigger" href="#legend">
+            Legenda
+        </a>
+    </center>
+</div>
 {% endblock content %}
+
+
+{% block extra_js %}
+{{ block.super }}
+<script type="text/javascript">
+$(document).ready(function () {
+    $('#legend').leanModal();
+    $('#legend-box a').click(function (){
+        $('#legend').openModal();
+    });
+});
+</script>
+{% endblock extra_js %}
