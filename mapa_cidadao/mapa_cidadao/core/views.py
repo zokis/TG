@@ -98,6 +98,7 @@ class IndexView(TemplateView):
             context['search_form'] = None
         context['request'] = self.request
         context['user'] = self.request.user
+        context['categorias'] = Categoria.objects.all()
         return context
 
 index = IndexView.as_view()
