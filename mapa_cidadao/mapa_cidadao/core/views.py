@@ -21,7 +21,7 @@ from django.views.generic.detail import DetailView
 from django_user_agents.utils import get_user_agent
 
 from mapa_cidadao.core.forms import OcorrenciaForm, ContatoForm, SearchForm
-from mapa_cidadao.core.models import Categoria, Ocorrencia, Spam
+from mapa_cidadao.core.models import Categoria, Ocorrencia, Spam, Voto, Veto
 
 from mapa_cidadao.core.utils import get_geom_from_cache, is_last
 
@@ -265,7 +265,7 @@ class OcorrenciaDetailView(MobTemplateMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(OcorrenciaDetailView, self).get_context_data(**kwargs)
-        context['title'] = u'Detalhes'
+        context['title'] = u'Detalhes - %s' % context['object']
         context['FACEBOOK_APP_ID'] = settings.FACEBOOK_APP_ID
         return context
 
