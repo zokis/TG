@@ -200,11 +200,11 @@ DJANGO_APPS = (
 
 THIRD_PARTY_APPS = (
     # Database migration helpers:
-    'social_auth',
-    'municipios',
-    'materialize_forms',
+    'compressor',
     'django_user_agents',
-    'compressor'
+    'materialize_forms',
+    'municipios',
+    'social_auth',
     # 'django_extensions',
 )
 
