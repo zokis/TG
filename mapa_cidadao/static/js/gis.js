@@ -53,10 +53,10 @@ function feature_click(event) {
 
 function load_cidade_geom() {
     var geojson_format = new OpenLayers.Format.GeoJSON();
-    var sjc_lonlat = new OpenLayers.LonLat(-45.88555, -23.17960).transform(epsg4326, epsg900913);
+    var mun_lonlat = new OpenLayers.LonLat(-45.4245729, -23.6267476).transform(epsg4326, epsg900913);
     var zoom = 15;
-    map.setCenter(sjc_lonlat, zoom);
-    var cidade_layer = new OpenLayers.Layer.Vector("Limites de São José dos Campos");
+    map.setCenter(mun_lonlat, zoom);
+    var cidade_layer = new OpenLayers.Layer.Vector("Limites de Caraguatatuba");
     map.addLayer(cidade_layer);
     $.ajax({
         dataType: "json",
