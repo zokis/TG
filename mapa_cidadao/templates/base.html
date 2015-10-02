@@ -13,7 +13,7 @@
   <meta name="description" content="">
   <meta name="keywords" content="">
   <meta name="robots" content="index,follow">
-
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <!-- CSS  -->
   {% compress css %}
   <link href="{% static 'css/materialize.css' %}" type="text/css" rel="stylesheet" media="screen,projection">
@@ -31,44 +31,44 @@
   <nav>
     <div class="nav-wrapper blue">
       <div class="col s12">
-        <a href="/" class="brand-logo">. <i class="mdi-maps-map"></i> Mapa do Cidadão</a>
+        <a href="/" class="brand-logo">Mapa do Cidadão</a>
         <ul id="slide-out" class="side-nav">
-          <li><a href="{% url 'estatisticas' %}"><i class="mdi-action-trending-up left"></i>Estatísticas</a></li>
+          <li><a href="{% url 'estatisticas' %}"><i class="material-icons left">trending_up</i>Estatísticas</a></li>
           {% if user.is_anonymous %}
             <li>
               <a href="{% url 'socialauth_begin' 'facebook' %}">
-                <i class="mdi-social-public left"></i> Login
+                <i class="material-icons left">public</i> Login
               </a>
             </li>
           {% else %}
             <li>
               <a href="{% url 'ocorrencia_list' %}" class="navbar-link">
-                <i class="mdi-action-view-list left"></i>Minhas Ocorrências
+                <i class="material-icons left">list</i>Minhas Ocorrências
               </a>
             </li>
             <li>
               <a href="{% url 'logout' %}" class="navbar-link">
-                <i class="mdi-action-exit-to-app left"></i>Sair
+                <i class="material-icons left">input</i>Sair
               </a>
             </li>
           {% endif %}
-          <li><a href="{% url 'contact' %}"><i class="mdi-content-mail left"></i> Contato</a></li>
-          <li><a href="{% url 'about' %}"><i class="mdi-action-info-outline left"></i> Sobre</a></li>
+          <li><a href="{% url 'contact' %}"><i class="material-icons left">mail</i> Contato</a></li>
+          <li><a href="{% url 'about' %}"><i class="material-icons left">info</i> Sobre</a></li>
         </ul>
         <ul class="right hide-on-med-and-down">
           {% if search_form %}
-          <li><a href="#" id="toggle-search"><i class="mdi-action-search left"></i>Busca</a></li>
+          <li><a href="#" id="toggle-search"><i class="material-icons left">search</i>Busca</a></li>
           {% endif %}
-          <li><a href="{% url 'estatisticas' %}"><i class="mdi-action-trending-up left"></i>Estatísticas</a></li>
+          <li><a href="{% url 'estatisticas' %}"><i class="material-icons left">trending_up</i>Estatísticas</a></li>
           {% if user.is_anonymous %}
-          <li><a href="{% url 'socialauth_begin' 'facebook' %}"><i class="mdi-social-public left"></i> Login com o Facebook</a></li>
+          <li><a href="{% url 'socialauth_begin' 'facebook' %}"><i class="material-icons left">public</i> Login com o Facebook</a></li>
           {% else %}
-          <li><a href="{% url 'ocorrencia_list' %}" class="navbar-link"><i class="mdi-action-view-list left"></i>Minhas Ocorrências</a></li>
-          <li><a href="{% url 'logout' %}" class="navbar-link"><i class="mdi-action-exit-to-app left"></i>Sair</a></li>
+          <li><a href="{% url 'ocorrencia_list' %}" class="navbar-link"><i class="material-icons left">list</i>Minhas Ocorrências</a></li>
+          <li><a href="{% url 'logout' %}" class="navbar-link"><i class="material-icons left">input</i>Sair</a></li>
           {% endif %}
-          <li><a class="dropdown-button" href="#" data-activates="drop-more"><i class="mdi-navigation-arrow-drop-down"></i></a></li>
+          <li><a class="dropdown-button" href="#" data-activates="drop-more"><i class="material-icons">reorder</i></a></li>
         </ul>
-        <a href="#" data-activates="slide-out" class="button-collapse"><i class="mdi-navigation-menu"></i></a>
+        <a href="#" data-activates="slide-out" class="button-collapse"><i class="material-icons">reorder</i></a>
       </div>
     </div>
   </nav>
@@ -88,7 +88,7 @@
         <div class="row">
           <div class="col s12">
             <button class="btn waves-effect waves-light" type="submit" name="action">Buscar
-              <i class="mdi-content-send right"></i>
+              <i class="material-icons right">send</i>
             </button>
           </div>
         </div>

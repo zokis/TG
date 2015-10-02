@@ -37,7 +37,7 @@ function feature_click(event) {
     '&nbsp;...' + 
     '<div class="row">' +
     '<a href="/ocorrencia/' + feature.attributes.pk + '/detalhes/" class="waves-effect waves-light btn">' +
-    'Detalhes<i class="mdi-image-details right"></i>' +
+    'Detalhes<i class="material-icons right">assignment</i>' +
     '</a></div>';
     popup = new OpenLayers.Popup.FramedCloud(
     "mc-"+feature.attributes.pk,
@@ -150,8 +150,8 @@ function mapa_cidadao_draw_component(geom, container){
         '</style>';
     $('html > head').append(component_style);
     var component_html = '' +
-        '<i id="draw-point" class="mdi-maps-pin-drop" title="Adicionar Novo Ponto"></i>' +
-        '<i id="pam" class="mdi-maps-navigation blue" title="Mover-se pelo Mapa">';
+        '<i id="draw-point" class="large material-icons" title="Adicionar Novo Ponto">location_on</i>' +
+        '<i id="pam" class="large material-icons blue" title="Mover-se pelo Mapa">navigation</i>';
     $(container).append(component_html);
     var pontos_layer = new OpenLayers.Layer.Vector("Pontos");
     map.addLayers([pontos_layer]);

@@ -18,7 +18,7 @@
                     <th>Status</th>
                     <th>Categoria</th>
                     <th>Detalhes</th>
-                    <th><i class="mdi-action-delete"></i></th>
+                    <th><i class="material-icons">delete</i></th>
                 </tr>
             </thead>
             <tbody>
@@ -29,13 +29,13 @@
                         <td>{{ object.categoria }}</td>
                         <td>
                             <a href="{% url 'ocorrencia_detail' object.pk %}" class="waves-effect waves-light">
-                                <i class="mdi-image-details"></i>
+                                <i class="material-icons">assignment</i>
                             </a>
                         </td>
                         <td>
                             <a href="#modal-delete" class="modal-delete waves-effect waves-light">
                                 <input type="hidden" value="{{ object.pk }}">
-                                <i class="mdi-action-delete"></i>
+                                <i class="material-icons">delete</i>
                             </a>
                         </td>
                     </tr>

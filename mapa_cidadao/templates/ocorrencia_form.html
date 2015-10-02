@@ -13,7 +13,7 @@
     <div id="map"></div>
     <div id="tools"></div>
     {% if not request|is_mobile %}<a id="locate" title="Localizar" href="#">
-        <i class="mdi-device-gps-fixed"></i>
+        <i class="large material-icons">my_location</i>
     </a>{% endif %}
     <div id="form-overlay" style="left:45;top:0;">
         <center>
@@ -22,7 +22,7 @@
             </h4>
         </center>
         <div id="mc_mover_form" class="mc_mover_form">
-            <i class="mdi-action-open-with"></i>
+            <i class="material-icons">open_with</i>
         </div>
         <hr>
         <form method="POST">
@@ -40,7 +40,7 @@
             {{ form.ponto }}
             <button class="btn waves-effect waves-light" type="submit" name="action">
               Salvar Ocorrência
-              <i class="mdi-content-send right"></i>
+              <i class="material-icons right">send</i>
             </button>
         </form>
     </div>

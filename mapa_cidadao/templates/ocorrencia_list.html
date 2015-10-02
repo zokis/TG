@@ -34,18 +34,18 @@
                         <td>
                             <a href="#" class="waves-effect waves-light btn view-in-map">
                                 <input type="hidden" value="{{ object.ponto.wkt }}">
-                                <i class="mdi-image-remove-red-eye"></i>
+                                <i class="material-icons">visibility</i>
                             </a>
                         </td>
                         <td>
                             <a href="{% url 'ocorrencia_detail' object.pk %}" class="waves-effect waves-light btn">
-                                <i class="mdi-image-details"></i>
+                                <i class="material-icons">assignment</i>
                             </a>
                         </td>
                         <td>
                             <a href="#modal-delete" class="modal-delete red waves-effect waves-light btn">
                                 <input type="hidden" value="{{ object.pk }}">
-                                <i class="mdi-action-delete"></i>
+                                <i class="material-icons">delete</i>
                             </a>
                         </td>
                     </tr>

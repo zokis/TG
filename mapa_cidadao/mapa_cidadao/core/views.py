@@ -240,7 +240,7 @@ def ocorrencia_crud(request, pk=None):
     if request.method == 'POST':
         if form.is_valid():
             ocorrencia = form.save()
-            messages.success(request, u'Ocorrência salva com sucesso!')
+            messages.success(request, u'É um prazer para nossa gestão ouvir sua solicitação. Obrigado, entraremos em contato em breve!')
             return redirect(reverse('ocorrencia_detail', args=(ocorrencia.pk,)))
         else:
             geom = form.cleaned_data.get('ponto', EMPTY_STRING)

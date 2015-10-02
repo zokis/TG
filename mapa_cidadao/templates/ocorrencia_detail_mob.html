@@ -25,18 +25,18 @@
                 {% if user.pk == object.user.pk %}
                     <a href="{% url 'ocorrencia_crud' object.pk %}" title="Editar Ocorrência" class="waves-effect waves-light btn rigth">
                         Editar
-                        <i class="mdi-content-send right"></i>
+                        <i class="material-icons right">send</i>
                     </a>
                     {% if object.status == 1 or object.status == 2 %}
                         <a href="{% url 'change_status' object.pk 3 %}" title="Alterar Status para Resolvida" class="blue waves-effect waves-light btn rigth">
                             Resolvida
-                            <i class="mdi-navigation-check right"></i>
+                            <i class="material-icons right">done</i>
                         </a>
                     {% else %}
                         {% if object.status == 3 %}
                             <a href="{% url 'change_status' object.pk 2 %}" title="Alterar Status para Reaberta"  class="blue waves-effect waves-light btn rigth">
                                 Reabrir
-                                <i class="mdi-action-autorenew right"></i>
+                                <i class="material-icons right">repeat</i>
                             </a>
                         {% endif %}
                     {% endif %}
@@ -105,7 +105,7 @@
                             <form method="POST" action="{% url 'votar' object.pk 'votar' %}">
                                 {% csrf_token %}
                                 <button class="waves-effect waves-light btn" type="submit" title="Votar">
-                                    <i class="mdi-action-thumb-up"></i>
+                                    <i class="material-icons">thumb_up</i>
                                 </button>
                             </form>
                         </div>
@@ -116,7 +116,7 @@
                             <form method="POST" action="{% url 'votar' object.pk 'vetar' %}">
                                 {% csrf_token %}
                                 <button class="waves-effect waves-light btn" type="submit" title="Vetar">
-                                    <i class="mdi-action-thumb-down"></i>
+                                    <i class="material-icons">thumb_down</i>
                                 </button>
                             </form>
                         </div>
